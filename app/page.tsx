@@ -238,7 +238,7 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-10">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">
         <header className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
@@ -274,7 +274,7 @@ export default function HomePage() {
           </div>
         </header>
 
-        <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <section className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -419,7 +419,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <aside className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:sticky lg:top-6 lg:self-start">
+          <aside className="order-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:order-none lg:sticky lg:top-6 lg:self-start">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-900">Ringkasan</h2>
               <span
@@ -477,6 +477,10 @@ export default function HomePage() {
             </div>
           </aside>
         </section>
+
+        <footer className="text-center text-xs text-slate-400">
+          MVP • GitHub Pages
+        </footer>
       </div>
     </main>
   );
