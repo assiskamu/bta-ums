@@ -7,6 +7,7 @@ import {
   getMinimumTargetsByCategory,
   sumMinimumTargetHours,
 } from "../packages/core/src";
+import { getCatalogActivitiesBySubCategory } from "../lib/catalog";
 
 const PATHWAYS = [
   "Guru",
@@ -38,6 +39,16 @@ const TAB_ICONS: Record<TabKey, string> = {
   Perkhidmatan: "🤝",
 };
 
+const TAB_SUBCATEGORIES: Record<TabKey, string> = {
+  Pengajaran: "SUB_TEACH",
+  Penyeliaan: "SUB_SUP",
+  Penerbitan: "SUB_PUB",
+  Penyelidikan: "SUB_RES",
+  Persidangan: "SUB_CONF",
+  Pentadbiran: "SUB_ADMIN",
+  Perkhidmatan: "SUB_SVC",
+};
+
 type Entry = {
   id: string;
   activity: string;
@@ -46,9 +57,9 @@ type Entry = {
 };
 
 type DraftEntry = {
-  activity: string;
-  units: string;
-  hours: string;
+  activityCode: string;
+  optionId: string;
+  quantity: string;
 };
 
 type StoredState = {
@@ -67,7 +78,7 @@ const createEmptyEntries = () =>
 
 const createEmptyDrafts = () =>
   TABS.reduce<Record<TabKey, DraftEntry>>((accumulator, tab) => {
-    accumulator[tab] = { activity: "", units: "", hours: "" };
+    accumulator[tab] = { activityCode: "", optionId: "", quantity: "" };
     return accumulator;
   }, {} as Record<TabKey, DraftEntry>);
 
@@ -116,6 +127,11 @@ export default function HomePage() {
   const [draftsByTab, setDraftsByTab] = useState(createEmptyDrafts);
   const [errorsByTab, setErrorsByTab] = useState(createEmptyErrors);
 
+  const catalogActivitiesBySubCategory = useMemo(
+    () => getCatalogActivitiesBySubCategory(),
+    []
+  );
+
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
@@ -155,44 +171,75 @@ export default function HomePage() {
     }
   }, [grade, pathway]);
 
-  const handleDraftChange = (
-    tab: TabKey,
-    field: keyof DraftEntry,
-    value: string
-  ) => {
+  const updateDraft = (tab: TabKey, updates: Partial<DraftEntry>) => {
     setDraftsByTab((current) => ({
       ...current,
       [tab]: {
         ...current[tab],
-        [field]: value,
+        ...updates,
       },
     }));
 
-    if (field === "hours") {
-      setErrorsByTab((current) => ({
-        ...current,
-        [tab]: "",
-      }));
-    }
+    setErrorsByTab((current) => ({
+      ...current,
+      [tab]: "",
+    }));
+  };
+
+  const handleActivityChange = (tab: TabKey, activityCode: string) => {
+    const subCategoryId = TAB_SUBCATEGORIES[tab];
+    const activities = catalogActivitiesBySubCategory[subCategoryId] ?? [];
+    const selectedActivity = activities.find(
+      (activity) => activity.activityCode === activityCode
+    );
+    updateDraft(tab, {
+      activityCode,
+      optionId: selectedActivity?.options[0]?.id ?? "",
+    });
+  };
+
+  const handleOptionChange = (tab: TabKey, optionId: string) => {
+    updateDraft(tab, { optionId });
+  };
+
+  const handleQuantityChange = (tab: TabKey, quantity: string) => {
+    updateDraft(tab, { quantity });
   };
 
   const handleAddEntry = (tab: TabKey) => {
     const draft = draftsByTab[tab];
-    const hoursValue = Number.parseFloat(draft.hours);
+    const subCategoryId = TAB_SUBCATEGORIES[tab];
+    const activities = catalogActivitiesBySubCategory[subCategoryId] ?? [];
+    const selectedActivity = activities.find(
+      (activity) => activity.activityCode === draft.activityCode
+    );
+    const selectedOption = selectedActivity?.options.find(
+      (option) => option.id === draft.optionId
+    );
+    const quantityValue = Number.parseFloat(draft.quantity);
+    const totalHours = quantityValue * (selectedOption?.jamPerUnit ?? 0);
 
-    if (!Number.isFinite(hoursValue) || hoursValue <= 0) {
+    if (!selectedActivity || !selectedOption) {
       setErrorsByTab((current) => ({
         ...current,
-        [tab]: "Jam mesti lebih daripada 0.",
+        [tab]: "Sila pilih aktiviti dan kategori aktiviti.",
+      }));
+      return;
+    }
+
+    if (!Number.isFinite(quantityValue) || quantityValue <= 0) {
+      setErrorsByTab((current) => ({
+        ...current,
+        [tab]: "Kuantiti mesti lebih daripada 0.",
       }));
       return;
     }
 
     const newEntry: Entry = {
       id: `${tab}-${Date.now()}`,
-      activity: draft.activity.trim() || "(Aktiviti)",
-      units: draft.units.trim() || "-",
-      hours: hoursValue,
+      activity: `${selectedActivity.activityName} — ${selectedOption.optionName}`,
+      units: `${quantityValue} ${selectedOption.unitLabel}`,
+      hours: totalHours,
     };
 
     setEntriesByTab((current) => ({
@@ -202,7 +249,10 @@ export default function HomePage() {
 
     setDraftsByTab((current) => ({
       ...current,
-      [tab]: { activity: "", units: "", hours: "" },
+      [tab]: {
+        ...current[tab],
+        quantity: "",
+      },
     }));
     setErrorsByTab((current) => ({
       ...current,
@@ -266,6 +316,22 @@ export default function HomePage() {
     () => sumMinimumTargetHours(pathway, grade),
     [pathway, grade]
   );
+
+  const activeSubCategoryId = TAB_SUBCATEGORIES[activeTab];
+  const activitiesForActiveTab =
+    catalogActivitiesBySubCategory[activeSubCategoryId] ?? [];
+  const selectedActivity = activitiesForActiveTab.find(
+    (activity) => activity.activityCode === draftsByTab[activeTab].activityCode
+  );
+  const optionsForSelectedActivity = selectedActivity?.options ?? [];
+  const selectedOption = optionsForSelectedActivity.find(
+    (option) => option.id === draftsByTab[activeTab].optionId
+  );
+  const quantityValue = Number.parseFloat(draftsByTab[activeTab].quantity);
+  const normalizedQuantity = Number.isFinite(quantityValue) ? quantityValue : 0;
+  const jamPerUnit = selectedOption?.jamPerUnit ?? 0;
+  const unitLabel = selectedOption?.unitLabel ?? "-";
+  const totalDraftHours = normalizedQuantity * jamPerUnit;
 
   const progressPercentage = Math.min((totals.totalHours / 40) * 100, 100);
   const statusLabel = totals.totalHours >= 40 ? "Cukup" : "Kurang";
@@ -369,33 +435,58 @@ export default function HomePage() {
               <h3 className="text-base font-semibold text-slate-800">
                 {activeTab}
               </h3>
-              <div className="mt-4 grid gap-3 lg:grid-cols-[2fr_1fr_1fr_auto]">
-                <input
-                  type="text"
-                  placeholder="Nama aktiviti"
-                  value={draftsByTab[activeTab].activity}
+              <div className="mt-4 grid gap-3 lg:grid-cols-[2fr_2fr_1.2fr_1fr_auto]">
+                <select
+                  value={draftsByTab[activeTab].activityCode}
                   onChange={(event) =>
-                    handleDraftChange(activeTab, "activity", event.target.value)
+                    handleActivityChange(activeTab, event.target.value)
                   }
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                />
-                <input
-                  type="text"
-                  placeholder="Unit"
-                  value={draftsByTab[activeTab].units}
+                >
+                  <option value="">Pilih aktiviti</option>
+                  {activitiesForActiveTab.map((activity) => (
+                    <option key={activity.activityCode} value={activity.activityCode}>
+                      {activity.activityName}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={draftsByTab[activeTab].optionId}
                   onChange={(event) =>
-                    handleDraftChange(activeTab, "units", event.target.value)
+                    handleOptionChange(activeTab, event.target.value)
                   }
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                />
+                  disabled={!selectedActivity}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+                >
+                  <option value="">Pilih kategori aktiviti</option>
+                  {optionsForSelectedActivity.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.optionName}
+                    </option>
+                  ))}
+                </select>
+                <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 shadow-sm">
+                  <p className="text-xs font-semibold uppercase text-slate-400">
+                    Unit
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-slate-700">
+                    {unitLabel}
+                  </p>
+                  <p className="mt-2 text-xs font-semibold uppercase text-slate-400">
+                    Jam/Unit
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-slate-700">
+                    {jamPerUnit.toFixed(1)}
+                  </p>
+                </div>
                 <input
                   type="number"
                   min="0"
                   step="0.5"
-                  placeholder="Jam"
-                  value={draftsByTab[activeTab].hours}
+                  placeholder="Kuantiti"
+                  value={draftsByTab[activeTab].quantity}
                   onChange={(event) =>
-                    handleDraftChange(activeTab, "hours", event.target.value)
+                    handleQuantityChange(activeTab, event.target.value)
                   }
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                 />
@@ -406,6 +497,15 @@ export default function HomePage() {
                 >
                   Tambah
                 </button>
+              </div>
+              <div className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
+                <p className="text-xs font-semibold uppercase text-slate-400">
+                  Cara kira
+                </p>
+                <p className="mt-1 text-sm font-semibold text-slate-700">
+                  {normalizedQuantity} × {jamPerUnit.toFixed(1)} ={" "}
+                  {totalDraftHours.toFixed(1)} jam
+                </p>
               </div>
               {errorsByTab[activeTab] ? (
                 <p className="mt-2 text-sm text-red-600">
