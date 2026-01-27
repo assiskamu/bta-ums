@@ -1,0 +1,22 @@
+{
+  "pathways_minimum_targets": {
+    "description": "Minimum targets per pathway (placeholders).",
+    "entries": []
+  },
+  "teaching_tables": {
+    "description": "Teaching activity tables (placeholders).",
+    "entries": []
+  },
+  "supervision_tables": {
+    "description": "Supervision activity tables (placeholders).",
+    "entries": []
+  },
+  "research_tables": {
+    "description": "Research activity tables (placeholders).",
+    "entries": []
+  },
+  "admin_service_tables": {
+    "description": "Administration and service tables (placeholders).",
+    "entries": []
+  }
+}
