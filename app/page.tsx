@@ -340,7 +340,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-slate-50">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">
-        <header className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <header className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-lg shadow-slate-100">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-3xl font-semibold text-slate-900">
@@ -394,7 +394,7 @@ export default function HomePage() {
         </header>
 
         <section className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-lg shadow-slate-100">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">
@@ -419,10 +419,10 @@ export default function HomePage() {
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
-                  className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
+                  className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
                     activeTab === tab
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-200 ring-1 ring-blue-500/40"
+                      : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-100"
                   }`}
                 >
                   <span>{TAB_ICONS[tab]}</span>
@@ -431,7 +431,7 @@ export default function HomePage() {
               ))}
             </div>
 
-            <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="mt-6 rounded-xl border border-slate-200/80 bg-slate-50 p-4">
               <h3 className="text-base font-semibold text-slate-800">
                 {activeTab}
               </h3>
@@ -572,21 +572,26 @@ export default function HomePage() {
             </div>
           </div>
 
-          <aside className="order-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:order-none lg:sticky lg:top-6 lg:self-start">
+          <aside className="order-2 rounded-xl border border-slate-200/80 bg-white p-6 shadow-lg shadow-slate-100 lg:order-none lg:sticky lg:top-6 lg:self-start">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-900">Ringkasan</h2>
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                  totals.totalHours >= 40
-                    ? "bg-emerald-100 text-emerald-700"
-                    : "bg-amber-100 text-amber-700"
-                }`}
-              >
-                {statusLabel}
-              </span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                    totals.totalHours >= 40
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-amber-100 text-amber-700"
+                  }`}
+                >
+                  {statusLabel}
+                </span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                  Sasaran 40 jam
+                </span>
+              </div>
             </div>
 
-            <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="mt-6 rounded-xl border border-slate-200/80 bg-slate-50 p-4">
               <p className="text-xs font-semibold uppercase text-slate-500">
                 Total jam
               </p>
@@ -601,14 +606,14 @@ export default function HomePage() {
                 </div>
                 <div className="mt-2 h-2 w-full rounded-full bg-slate-200">
                   <div
-                    className="h-2 rounded-full bg-blue-600"
+                    className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"
                     style={{ width: `${progressPercentage}%` }}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
+            <div className="mt-6 rounded-xl border border-slate-200/80 bg-white p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold uppercase text-slate-500">
