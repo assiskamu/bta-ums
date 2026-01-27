@@ -2,6 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import {
+  getMinimumTargetGrades,
+  getMinimumTargetsByCategory,
+  sumMinimumTargetHours,
+} from "../packages/core/src";
+
 const PATHWAYS = [
   "Guru",
   "Pensyarah",
@@ -47,6 +53,7 @@ type DraftEntry = {
 
 type StoredState = {
   pathway: (typeof PATHWAYS)[number];
+  grade: string;
   entriesByTab: Record<TabKey, Entry[]>;
 };
 
@@ -78,6 +85,8 @@ const normalizeStoredState = (value: StoredState | null): StoredState | null => 
   const pathway = PATHWAYS.includes(value.pathway)
     ? value.pathway
     : PATHWAYS[0];
+  const grades = getMinimumTargetGrades(pathway);
+  const grade = grades.includes(value.grade) ? value.grade : grades[0] ?? "";
   const normalizedEntries = createEmptyEntries();
 
   TABS.forEach((tab) => {
@@ -92,12 +101,15 @@ const normalizeStoredState = (value: StoredState | null): StoredState | null => 
       }));
   });
 
-  return { pathway, entriesByTab: normalizedEntries };
+  return { pathway, grade, entriesByTab: normalizedEntries };
 };
 
 export default function HomePage() {
   const [pathway, setPathway] = useState<(typeof PATHWAYS)[number]>(
     PATHWAYS[0]
+  );
+  const [grade, setGrade] = useState<string>(
+    getMinimumTargetGrades(PATHWAYS[0])[0] ?? ""
   );
   const [activeTab, setActiveTab] = useState<TabKey>(TABS[0]);
   const [entriesByTab, setEntriesByTab] = useState(createEmptyEntries);
@@ -119,6 +131,7 @@ export default function HomePage() {
       const normalized = normalizeStoredState(parsed);
       if (normalized) {
         setPathway(normalized.pathway);
+        setGrade(normalized.grade);
         setEntriesByTab(normalized.entriesByTab);
       }
     } catch (error) {
@@ -131,9 +144,16 @@ export default function HomePage() {
       return;
     }
 
-    const payload: StoredState = { pathway, entriesByTab };
+    const payload: StoredState = { pathway, grade, entriesByTab };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  }, [entriesByTab, pathway]);
+  }, [entriesByTab, grade, pathway]);
+
+  useEffect(() => {
+    const grades = getMinimumTargetGrades(pathway);
+    if (!grades.includes(grade)) {
+      setGrade(grades[0] ?? "");
+    }
+  }, [grade, pathway]);
 
   const handleDraftChange = (
     tab: TabKey,
@@ -232,6 +252,21 @@ export default function HomePage() {
     return { breakdown, totalHours };
   }, [entriesByTab]);
 
+  const gradesForPathway = useMemo(
+    () => getMinimumTargetGrades(pathway),
+    [pathway]
+  );
+
+  const targetByCategory = useMemo(
+    () => getMinimumTargetsByCategory(pathway, grade),
+    [pathway, grade]
+  );
+
+  const totalTargetHours = useMemo(
+    () => sumMinimumTargetHours(pathway, grade),
+    [pathway, grade]
+  );
+
   const progressPercentage = Math.min((totals.totalHours / 40) * 100, 100);
   const statusLabel = totals.totalHours >= 40 ? "Cukup" : "Kurang";
   const progressText = `${totals.totalHours.toFixed(1)} / 40 jam`;
@@ -265,6 +300,24 @@ export default function HomePage() {
                 className="w-44 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
               >
                 {PATHWAYS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <label
+                className="text-sm font-medium text-slate-600"
+                htmlFor="grade"
+              >
+                Grade/Role
+              </label>
+              <select
+                id="grade"
+                value={grade}
+                onChange={(event) => setGrade(event.target.value)}
+                className="w-56 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              >
+                {gradesForPathway.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -440,7 +493,7 @@ export default function HomePage() {
               <p className="mt-2 text-3xl font-semibold text-slate-900">
                 {totals.totalHours.toFixed(1)}
               </p>
-              <p className="text-sm text-slate-500">jam / minggu</p>
+              <p className="text-sm text-slate-500">/ 40 jam</p>
               <div className="mt-4">
                 <div className="flex items-center justify-between text-xs text-slate-500">
                   <span>Sasaran 40 jam/minggu</span>
@@ -452,6 +505,91 @@ export default function HomePage() {
                     style={{ width: `${progressPercentage}%` }}
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase text-slate-500">
+                    Target minimum
+                  </p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    {pathway} · {grade}
+                  </p>
+                </div>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                  {totalTargetHours.toFixed(1)} / 40 jam
+                </span>
+              </div>
+              <div className="mt-4 space-y-3 text-sm text-slate-600">
+                {targetByCategory.map((target) => (
+                  <div
+                    key={target.category}
+                    className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-3 py-2"
+                  >
+                    <span>
+                      {TAB_ICONS[target.category as TabKey]} {target.category}
+                    </span>
+                    <div className="text-right text-xs font-semibold text-slate-600">
+                      <div>{(target.percent * 100).toFixed(0)}%</div>
+                      <div>{target.minHours.toFixed(1)} jam</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <p className="text-xs font-semibold uppercase text-slate-500">
+                Pencapaian kategori
+              </p>
+              <div className="mt-3 space-y-3">
+                {targetByCategory.map((target) => {
+                  const actual = totals.breakdown[target.category as TabKey];
+                  const progress =
+                    target.minHours > 0
+                      ? Math.min((actual / target.minHours) * 100, 100)
+                      : 0;
+                  const isMet = actual >= target.minHours;
+
+                  return (
+                    <div
+                      key={target.category}
+                      className="rounded-lg border border-slate-100 bg-white px-3 py-3"
+                    >
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-slate-600">
+                          {TAB_ICONS[target.category as TabKey]}{" "}
+                          {target.category}
+                        </span>
+                        <span
+                          className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                            isMet
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-amber-100 text-amber-700"
+                          }`}
+                        >
+                          {isMet ? "Cukup" : "Kurang"}
+                        </span>
+                      </div>
+                      <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
+                        <span>
+                          {actual.toFixed(1)} / {target.minHours.toFixed(1)} jam
+                        </span>
+                        <span>{progress.toFixed(0)}%</span>
+                      </div>
+                      <div className="mt-2 h-2 w-full rounded-full bg-slate-200">
+                        <div
+                          className={`h-2 rounded-full ${
+                            isMet ? "bg-emerald-500" : "bg-amber-500"
+                          }`}
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

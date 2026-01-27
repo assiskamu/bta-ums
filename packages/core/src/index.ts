@@ -19,6 +19,8 @@ export type CalculationResult = {
   breakdown: Record<string, { total: number }>;
 };
 
+export * from "./minimumTargets";
+
 export const calculateBTA = (input: ActivityInput[]): CalculationResult => {
   const breakdown = input.reduce<Record<string, { total: number }>>(
     (acc, activity) => {
