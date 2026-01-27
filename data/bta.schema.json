@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["meta", "categories", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["version", "source", "effectiveDate", "unitBaseHoursPerWeek"],
+      "additionalProperties": false,
+      "properties": {
+        "version": {"type": "string"},
+        "source": {"type": "string"},
+        "effectiveDate": {"type": "string", "format": "date"},
+        "unitBaseHoursPerWeek": {"type": "number"},
+        "notes": {"type": "string"}
+      }
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "nameMs", "sortOrder", "children"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^CAT_[A-Z0-9_]+$"},
+          "nameMs": {"type": "string"},
+          "nameEn": {"type": "string"},
+          "sortOrder": {"type": "integer"},
+          "children": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "nameMs", "sortOrder"],
+              "additionalProperties": false,
+              "properties": {
+                "id": {"type": "string", "pattern": "^SUB_[A-Z0-9_]+$"},
+                "nameMs": {"type": "string"},
+                "nameEn": {"type": "string"},
+                "sortOrder": {"type": "integer"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "sortOrder",
+          "categoryId",
+          "subCategoryId",
+          "activity",
+          "option",
+          "unit",
+          "jamPerUnit",
+          "tags"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^BTA_[A-Z0-9_]+$"},
+          "status": {"type": "string", "enum": ["active", "deprecated"]},
+          "sortOrder": {"type": "integer"},
+          "categoryId": {"type": "string", "pattern": "^CAT_[A-Z0-9_]+$"},
+          "subCategoryId": {"type": "string", "pattern": "^SUB_[A-Z0-9_]+$"},
+          "activity": {
+            "type": "object",
+            "required": ["code", "nameMs"],
+            "additionalProperties": false,
+            "properties": {
+              "code": {"type": "string"},
+              "nameMs": {"type": "string"},
+              "nameEn": {"type": "string"}
+            }
+          },
+          "option": {
+            "type": "object",
+            "required": ["code", "nameMs"],
+            "additionalProperties": false,
+            "properties": {
+              "code": {"type": "string"},
+              "nameMs": {"type": "string"},
+              "nameEn": {"type": "string"}
+            }
+          },
+          "unit": {
+            "type": "object",
+            "required": ["code", "labelMs"],
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "hour",
+                  "student",
+                  "project",
+                  "publication",
+                  "grant",
+                  "day",
+                  "appointment",
+                  "case",
+                  "session",
+                  "other"
+                ]
+              },
+              "labelMs": {"type": "string"},
+              "labelEn": {"type": "string"}
+            }
+          },
+          "jamPerUnit": {"type": "number"},
+          "constraints": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "minQuantity": {"type": "number"},
+              "maxQuantity": {"type": "number"},
+              "quantityStep": {"type": "number"},
+              "notesMs": {"type": "string"}
+            }
+          },
+          "calc": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type"],
+            "properties": {
+              "type": {"type": "string", "enum": ["multiply", "tiered", "custom"]},
+              "expression": {"type": "string"}
+            }
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["doc", "section"],
+              "additionalProperties": false,
+              "properties": {
+                "doc": {"type": "string"},
+                "section": {"type": "string"},
+                "page": {"type": "string"}
+              }
+            }
+          },
+          "tags": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string"}
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,3277 @@
+{
+  "meta": {
+    "version": "v1.0.0",
+    "source": "Pemberat setiap tugas.docx",
+    "effectiveDate": "2022-01-18",
+    "unitBaseHoursPerWeek": 40,
+    "notes": "Catalog of BTA activity weights (jam per unit) extracted from docx."
+  },
+  "categories": [
+    {
+      "id": "CAT_TEACH_SUP",
+      "nameMs": "Pengajaran & Penyeliaan",
+      "sortOrder": 1,
+      "children": [
+        {
+          "id": "SUB_TEACH",
+          "nameMs": "Pengajaran",
+          "sortOrder": 1
+        },
+        {
+          "id": "SUB_SUP",
+          "nameMs": "Penyeliaan",
+          "sortOrder": 2
+        }
+      ]
+    },
+    {
+      "id": "CAT_RESEARCH",
+      "nameMs": "Penyelidikan",
+      "sortOrder": 2,
+      "children": [
+        {
+          "id": "SUB_PUB",
+          "nameMs": "Penerbitan",
+          "sortOrder": 1
+        },
+        {
+          "id": "SUB_RES",
+          "nameMs": "Penyelidikan",
+          "sortOrder": 2
+        },
+        {
+          "id": "SUB_CONF",
+          "nameMs": "Persidangan",
+          "sortOrder": 3
+        }
+      ]
+    },
+    {
+      "id": "CAT_ADMIN_SVC",
+      "nameMs": "Pengurusan Pentadbiran & Perkhidmatan",
+      "sortOrder": 3,
+      "children": [
+        {
+          "id": "SUB_ADMIN",
+          "nameMs": "Pentadbiran",
+          "sortOrder": 1
+        },
+        {
+          "id": "SUB_SVC",
+          "nameMs": "Perkhidmatan",
+          "sortOrder": 2
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "BTA_TEACH_LECTURE_CLASS_SIZE_LT_50",
+      "status": "active",
+      "sortOrder": 100,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_TEACH",
+      "activity": {
+        "code": "TEACH_LECTURE",
+        "nameMs": "KULIAH"
+      },
+      "option": {
+        "code": "CLASS_SIZE_LT_50",
+        "nameMs": "SAIZ KELAS KURANG 50 PELAJAR"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "1. PENGAJARAN (PRASISWAZAH & PASCASISWAZAH)*"
+        }
+      ],
+      "tags": [
+        "kelas-kecil",
+        "kuliah",
+        "pengajaran"
+      ]
+    },
+    {
+      "id": "BTA_TEACH_LECTURE_CLASS_SIZE_50_100",
+      "status": "active",
+      "sortOrder": 101,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_TEACH",
+      "activity": {
+        "code": "TEACH_LECTURE",
+        "nameMs": "KULIAH"
+      },
+      "option": {
+        "code": "CLASS_SIZE_50_100",
+        "nameMs": "SAIZ KELAS 50-100 PELAJAR"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 1.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "1. PENGAJARAN (PRASISWAZAH & PASCASISWAZAH)*"
+        }
+      ],
+      "tags": [
+        "kelas-sederhana",
+        "kuliah",
+        "pengajaran"
+      ]
+    },
+    {
+      "id": "BTA_TEACH_LECTURE_CLASS_SIZE_GT_100",
+      "status": "active",
+      "sortOrder": 102,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_TEACH",
+      "activity": {
+        "code": "TEACH_LECTURE",
+        "nameMs": "KULIAH"
+      },
+      "option": {
+        "code": "CLASS_SIZE_GT_100",
+        "nameMs": "SAIZ KELAS LEBIH 100 PELAJAR"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 2,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "1. PENGAJARAN (PRASISWAZAH & PASCASISWAZAH)*"
+        }
+      ],
+      "tags": [
+        "kelas-besar",
+        "kuliah",
+        "pengajaran"
+      ]
+    },
+    {
+      "id": "BTA_TEACH_TUTORIAL_CLASS_SIZE_MAX_30",
+      "status": "active",
+      "sortOrder": 103,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_TEACH",
+      "activity": {
+        "code": "TEACH_TUTORIAL",
+        "nameMs": "TUTORIAL"
+      },
+      "option": {
+        "code": "CLASS_SIZE_MAX_30",
+        "nameMs": "SAIZ KELAS MESTILAH TIDAK MELEBIHI 30 PELAJAR"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "1. PENGAJARAN (PRASISWAZAH & PASCASISWAZAH)*"
+        }
+      ],
+      "tags": [
+        "kelas-maks-30",
+        "pengajaran",
+        "tutorial"
+      ],
+      "constraints": {
+        "notesMs": "Saiz kelas mestilah tidak melebihi 30 pelajar."
+      }
+    },
+    {
+      "id": "BTA_TEACH_PRACTICAL_TYPE_STUDIO_WORKSHOP_LAB_FIELDWORK",
+      "status": "active",
+      "sortOrder": 104,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_TEACH",
+      "activity": {
+        "code": "TEACH_PRACTICAL",
+        "nameMs": "AMALI"
+      },
+      "option": {
+        "code": "TYPE_STUDIO_WORKSHOP_LAB_FIELDWORK",
+        "nameMs": "STUDIO/ BENGKEL/ MAKMAL/ KERJA LAPANGAN"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "1. PENGAJARAN (PRASISWAZAH & PASCASISWAZAH)*"
+        }
+      ],
+      "tags": [
+        "amali",
+        "pengajaran"
+      ]
+    },
+    {
+      "id": "BTA_TEACH_PRACTICAL_TYPE_CLINICAL_TEACHING",
+      "status": "active",
+      "sortOrder": 105,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_TEACH",
+      "activity": {
+        "code": "TEACH_PRACTICAL",
+        "nameMs": "AMALI"
+      },
+      "option": {
+        "code": "TYPE_CLINICAL_TEACHING",
+        "nameMs": "PENGAJARAN KLINIKAL"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "1. PENGAJARAN (PRASISWAZAH & PASCASISWAZAH)*"
+        }
+      ],
+      "tags": [
+        "amali",
+        "klinikal",
+        "pengajaran"
+      ]
+    },
+    {
+      "id": "BTA_SUP_TEACHING_PRACTICUM_DEFAULT",
+      "status": "active",
+      "sortOrder": 200,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_TEACHING_PRACTICUM",
+        "nameMs": "LATIHAN MENGAJAR"
+      },
+      "option": {
+        "code": "DEFAULT",
+        "nameMs": "LATIHAN MENGAJAR"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 0.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PRASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "latihan-mengajar",
+        "penyeliaan",
+        "prasiswazah"
+      ]
+    },
+    {
+      "id": "BTA_SUP_COACHING_PRACTICUM_DEFAULT",
+      "status": "active",
+      "sortOrder": 201,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_COACHING_PRACTICUM",
+        "nameMs": "LATIHAN KEJURULATIHAN"
+      },
+      "option": {
+        "code": "DEFAULT",
+        "nameMs": "LATIHAN KEJURULATIHAN"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 0.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PRASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "latihan-kejurulatihan",
+        "penyeliaan",
+        "prasiswazah"
+      ]
+    },
+    {
+      "id": "BTA_SUP_SCIENTIFIC_TRAINING_ROLE_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 202,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_SCIENTIFIC_TRAINING",
+        "nameMs": "LATIHAN ILMIAH"
+      },
+      "option": {
+        "code": "ROLE_SUPERVISOR",
+        "nameMs": "PENYELIA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 0.25,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PRASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "latihan-ilmiah",
+        "penyelia",
+        "penyeliaan",
+        "prasiswazah"
+      ]
+    },
+    {
+      "id": "BTA_SUP_SCIENTIFIC_TRAINING_ROLE_EXAMINER",
+      "status": "active",
+      "sortOrder": 203,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_SCIENTIFIC_TRAINING",
+        "nameMs": "LATIHAN ILMIAH"
+      },
+      "option": {
+        "code": "ROLE_EXAMINER",
+        "nameMs": "PEMERIKSA/ PENILAI"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 0.125,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PRASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "latihan-ilmiah",
+        "pemeriksa",
+        "penyeliaan",
+        "prasiswazah"
+      ]
+    },
+    {
+      "id": "BTA_SUP_FINAL_YEAR_PROJECT_ROLE_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 204,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_FINAL_YEAR_PROJECT",
+        "nameMs": "PROJEK TAHUN AKHIR"
+      },
+      "option": {
+        "code": "ROLE_SUPERVISOR",
+        "nameMs": "PENYELIA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 0.25,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PRASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "penyelia",
+        "penyeliaan",
+        "prasiswazah",
+        "projek-tahun-akhir"
+      ]
+    },
+    {
+      "id": "BTA_SUP_FINAL_YEAR_PROJECT_ROLE_EXAMINER",
+      "status": "active",
+      "sortOrder": 205,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_FINAL_YEAR_PROJECT",
+        "nameMs": "PROJEK TAHUN AKHIR"
+      },
+      "option": {
+        "code": "ROLE_EXAMINER",
+        "nameMs": "PEMERIKSA/ PENILAI"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 0.125,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PRASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pemeriksa",
+        "penyeliaan",
+        "prasiswazah",
+        "projek-tahun-akhir"
+      ]
+    },
+    {
+      "id": "BTA_SUP_INDUSTRIAL_TRAINING_DEFAULT",
+      "status": "active",
+      "sortOrder": 206,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_INDUSTRIAL_TRAINING",
+        "nameMs": "LATIHAN INDUSTRI"
+      },
+      "option": {
+        "code": "DEFAULT",
+        "nameMs": "LATIHAN INDUSTRI"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 0.125,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PRASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "latihan-industri",
+        "penyeliaan",
+        "prasiswazah"
+      ]
+    },
+    {
+      "id": "BTA_SUP_CLINICAL_TRAINING_DEFAULT",
+      "status": "active",
+      "sortOrder": 207,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_CLINICAL_TRAINING",
+        "nameMs": "LATIHAN KLINIKAL/ KLINIKAL KAUNSELING"
+      },
+      "option": {
+        "code": "DEFAULT",
+        "nameMs": "LATIHAN KLINIKAL/ KLINIKAL KAUNSELING"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 0.125,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PRASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "latihan-klinikal",
+        "penyeliaan",
+        "prasiswazah"
+      ]
+    },
+    {
+      "id": "BTA_SUP_PHD_RESEARCH_FULLTIME_ROLE_SOLE_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 208,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_PHD_RESEARCH_FULLTIME",
+        "nameMs": "PHD MOD PENYELIDIKAN ATAU CAMPURAN (SEPENUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_SOLE_SUPERVISOR",
+        "nameMs": "PENYELIA PERSEORANGAN"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 4,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-perseorangan",
+        "penyeliaan",
+        "phd",
+        "sepenuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_PHD_RESEARCH_FULLTIME_ROLE_MAIN_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 209,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_PHD_RESEARCH_FULLTIME",
+        "nameMs": "PHD MOD PENYELIDIKAN ATAU CAMPURAN (SEPENUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_MAIN_SUPERVISOR",
+        "nameMs": "PENYELIA UTAMA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 3,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-utama",
+        "penyeliaan",
+        "phd",
+        "sepenuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_PHD_RESEARCH_FULLTIME_ROLE_CO_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 210,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_PHD_RESEARCH_FULLTIME",
+        "nameMs": "PHD MOD PENYELIDIKAN ATAU CAMPURAN (SEPENUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_CO_SUPERVISOR",
+        "nameMs": "PENYELIA BERSAMA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 2,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-bersama",
+        "penyeliaan",
+        "phd",
+        "sepenuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_PHD_RESEARCH_PARTTIME_ROLE_SOLE_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 211,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_PHD_RESEARCH_PARTTIME",
+        "nameMs": "PHD MOD PENYELIDIKAN ATAU CAMPURAN (SEPARUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_SOLE_SUPERVISOR",
+        "nameMs": "PENYELIA PERSEORANGAN"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 3,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-perseorangan",
+        "penyeliaan",
+        "phd",
+        "separuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_PHD_RESEARCH_PARTTIME_ROLE_MAIN_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 212,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_PHD_RESEARCH_PARTTIME",
+        "nameMs": "PHD MOD PENYELIDIKAN ATAU CAMPURAN (SEPARUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_MAIN_SUPERVISOR",
+        "nameMs": "PENYELIA UTAMA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 2.25,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-utama",
+        "penyeliaan",
+        "phd",
+        "separuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_PHD_RESEARCH_PARTTIME_ROLE_CO_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 213,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_PHD_RESEARCH_PARTTIME",
+        "nameMs": "PHD MOD PENYELIDIKAN ATAU CAMPURAN (SEPARUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_CO_SUPERVISOR",
+        "nameMs": "PENYELIA BERSAMA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 1.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-bersama",
+        "penyeliaan",
+        "phd",
+        "separuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_MASTERS_RESEARCH_FULLTIME_ROLE_SOLE_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 214,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_MASTERS_RESEARCH_FULLTIME",
+        "nameMs": "SARJANA MOD PENYELIDIKAN ATAU CAMPURAN (SEPENUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_SOLE_SUPERVISOR",
+        "nameMs": "PENYELIA PERSEORANGAN"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 2,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-perseorangan",
+        "penyeliaan",
+        "sarjana",
+        "sepenuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_MASTERS_RESEARCH_FULLTIME_ROLE_MAIN_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 215,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_MASTERS_RESEARCH_FULLTIME",
+        "nameMs": "SARJANA MOD PENYELIDIKAN ATAU CAMPURAN (SEPENUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_MAIN_SUPERVISOR",
+        "nameMs": "PENYELIA UTAMA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 1.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-utama",
+        "penyeliaan",
+        "sarjana",
+        "sepenuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_MASTERS_RESEARCH_FULLTIME_ROLE_CO_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 216,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_MASTERS_RESEARCH_FULLTIME",
+        "nameMs": "SARJANA MOD PENYELIDIKAN ATAU CAMPURAN (SEPENUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_CO_SUPERVISOR",
+        "nameMs": "PENYELIA BERSAMA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-bersama",
+        "penyeliaan",
+        "sarjana",
+        "sepenuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_MASTERS_RESEARCH_PARTTIME_ROLE_SOLE_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 217,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_MASTERS_RESEARCH_PARTTIME",
+        "nameMs": "SARJANA MOD PENYELIDIKAN ATAU CAMPURAN (SEPARUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_SOLE_SUPERVISOR",
+        "nameMs": "PENYELIA PERSEORANGAN"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 1.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-perseorangan",
+        "penyeliaan",
+        "sarjana",
+        "separuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_MASTERS_RESEARCH_PARTTIME_ROLE_MAIN_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 218,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_MASTERS_RESEARCH_PARTTIME",
+        "nameMs": "SARJANA MOD PENYELIDIKAN ATAU CAMPURAN (SEPARUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_MAIN_SUPERVISOR",
+        "nameMs": "PENYELIA UTAMA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 1.125,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-utama",
+        "penyeliaan",
+        "sarjana",
+        "separuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_MASTERS_RESEARCH_PARTTIME_ROLE_CO_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 219,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_MASTERS_RESEARCH_PARTTIME",
+        "nameMs": "SARJANA MOD PENYELIDIKAN ATAU CAMPURAN (SEPARUH MASA)"
+      },
+      "option": {
+        "code": "ROLE_CO_SUPERVISOR",
+        "nameMs": "PENYELIA BERSAMA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 0.75,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "pascasiswazah",
+        "penyelia-bersama",
+        "penyeliaan",
+        "sarjana",
+        "separuh-masa"
+      ]
+    },
+    {
+      "id": "BTA_SUP_DRPH_DISSERTATION_ROLE_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 220,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_DRPH_DISSERTATION",
+        "nameMs": "DISERTASI DrPH (DOCTOR OF PUBLIC HEALTH)"
+      },
+      "option": {
+        "code": "ROLE_SUPERVISOR",
+        "nameMs": "PENYELIA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "drph",
+        "pascasiswazah",
+        "penyelia",
+        "penyeliaan"
+      ]
+    },
+    {
+      "id": "BTA_SUP_MASTERS_COURSEWORK_DISSERTATION_ROLE_SUPERVISOR",
+      "status": "active",
+      "sortOrder": 221,
+      "categoryId": "CAT_TEACH_SUP",
+      "subCategoryId": "SUB_SUP",
+      "activity": {
+        "code": "SUP_MASTERS_COURSEWORK_DISSERTATION",
+        "nameMs": "DISERTASI SARJANA KERJA KURSUS"
+      },
+      "option": {
+        "code": "ROLE_SUPERVISOR",
+        "nameMs": "PENYELIA"
+      },
+      "unit": {
+        "code": "student",
+        "labelMs": "pelajar"
+      },
+      "jamPerUnit": 0.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "2. PENYELIAAN (PASCASISWAZAH)"
+        }
+      ],
+      "tags": [
+        "kerja-kursus",
+        "pascasiswazah",
+        "penyelia",
+        "penyeliaan",
+        "sarjana"
+      ]
+    },
+    {
+      "id": "BTA_PUB_JOURNAL_INDEX_SCOPUS_WOS_ERA",
+      "status": "active",
+      "sortOrder": 400,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_JOURNAL",
+        "nameMs": "ARTIKEL JURNAL"
+      },
+      "option": {
+        "code": "INDEX_SCOPUS_WOS_ERA",
+        "nameMs": "DIINDEKS OLEH SCOPUS, WOS, ERA"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 4,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "era",
+        "jurnal",
+        "penerbitan",
+        "scopus",
+        "wos"
+      ]
+    },
+    {
+      "id": "BTA_PUB_JOURNAL_INDEX_MYCITE",
+      "status": "active",
+      "sortOrder": 401,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_JOURNAL",
+        "nameMs": "ARTIKEL JURNAL"
+      },
+      "option": {
+        "code": "INDEX_MYCITE",
+        "nameMs": "DIINDEKS OLEH MYCITE"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 2,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "jurnal",
+        "mycite",
+        "penerbitan"
+      ]
+    },
+    {
+      "id": "BTA_PUB_JOURNAL_INDEX_NOT_INDEXED",
+      "status": "active",
+      "sortOrder": 402,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_JOURNAL",
+        "nameMs": "ARTIKEL JURNAL"
+      },
+      "option": {
+        "code": "INDEX_NOT_INDEXED",
+        "nameMs": "TIDAK BERINDEKS"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 0.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "jurnal",
+        "penerbitan",
+        "tidak-berindeks"
+      ]
+    },
+    {
+      "id": "BTA_PUB_BOOK_INDEXED",
+      "status": "active",
+      "sortOrder": 403,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_BOOK",
+        "nameMs": "BUKU"
+      },
+      "option": {
+        "code": "INDEXED",
+        "nameMs": "BERINDEKS"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 3,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "berindeks",
+        "buku",
+        "penerbitan"
+      ]
+    },
+    {
+      "id": "BTA_PUB_BOOK_MAPIM_REGISTERED",
+      "status": "active",
+      "sortOrder": 404,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_BOOK",
+        "nameMs": "BUKU"
+      },
+      "option": {
+        "code": "MAPIM_REGISTERED",
+        "nameMs": "BERDAFTAR DENGAN MAPIM"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "buku",
+        "mapim",
+        "penerbitan"
+      ]
+    },
+    {
+      "id": "BTA_PUB_BOOK_MAPIM_NOT_REGISTERED",
+      "status": "active",
+      "sortOrder": 405,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_BOOK",
+        "nameMs": "BUKU"
+      },
+      "option": {
+        "code": "MAPIM_NOT_REGISTERED",
+        "nameMs": "TIDAK BERDAFTAR DENGAN MAPIM"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 0.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "buku",
+        "penerbitan",
+        "tidak-mapim"
+      ]
+    },
+    {
+      "id": "BTA_PUB_BOOK_CHAPTER_INDEXED",
+      "status": "active",
+      "sortOrder": 406,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_BOOK_CHAPTER",
+        "nameMs": "BAB DALAM BUKU"
+      },
+      "option": {
+        "code": "INDEXED",
+        "nameMs": "BERINDEKS"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 1.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "bab-buku",
+        "berindeks",
+        "penerbitan"
+      ]
+    },
+    {
+      "id": "BTA_PUB_BOOK_CHAPTER_MAPIM_REGISTERED",
+      "status": "active",
+      "sortOrder": 407,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_BOOK_CHAPTER",
+        "nameMs": "BAB DALAM BUKU"
+      },
+      "option": {
+        "code": "MAPIM_REGISTERED",
+        "nameMs": "BERDAFTAR DENGAN MAPIM"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 0.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "bab-buku",
+        "mapim",
+        "penerbitan"
+      ]
+    },
+    {
+      "id": "BTA_PUB_BOOK_CHAPTER_MAPIM_NOT_REGISTERED",
+      "status": "active",
+      "sortOrder": 408,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_BOOK_CHAPTER",
+        "nameMs": "BAB DALAM BUKU"
+      },
+      "option": {
+        "code": "MAPIM_NOT_REGISTERED",
+        "nameMs": "TIDAK BERDAFTAR DENGAN MAPIM"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 0.25,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "bab-buku",
+        "penerbitan",
+        "tidak-mapim"
+      ]
+    },
+    {
+      "id": "BTA_PUB_PROCEEDINGS_INDEXED",
+      "status": "active",
+      "sortOrder": 409,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_PROCEEDINGS",
+        "nameMs": "PROSIDING"
+      },
+      "option": {
+        "code": "INDEXED",
+        "nameMs": "BERINDEKS"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "berindeks",
+        "penerbitan",
+        "prosiding"
+      ]
+    },
+    {
+      "id": "BTA_PUB_PROCEEDINGS_INDEX_NOT_INDEXED",
+      "status": "active",
+      "sortOrder": 410,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_PROCEEDINGS",
+        "nameMs": "PROSIDING"
+      },
+      "option": {
+        "code": "INDEX_NOT_INDEXED",
+        "nameMs": "TIDAK BERINDEKS"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 0.25,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "penerbitan",
+        "prosiding",
+        "tidak-berindeks"
+      ]
+    },
+    {
+      "id": "BTA_PUB_OTHER_TYPE_POLICY_PAPER",
+      "status": "active",
+      "sortOrder": 411,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_OTHER",
+        "nameMs": "LAIN-LAIN PENERBITAN"
+      },
+      "option": {
+        "code": "TYPE_POLICY_PAPER",
+        "nameMs": "KERTAS POLISI"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 8,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "lain-lain",
+        "penerbitan"
+      ]
+    },
+    {
+      "id": "BTA_PUB_OTHER_TYPE_CREATIVE",
+      "status": "active",
+      "sortOrder": 412,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_OTHER",
+        "nameMs": "LAIN-LAIN PENERBITAN"
+      },
+      "option": {
+        "code": "TYPE_CREATIVE",
+        "nameMs": "KREATIF"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "lain-lain",
+        "penerbitan"
+      ]
+    },
+    {
+      "id": "BTA_PUB_OTHER_TYPE_MEDIA",
+      "status": "active",
+      "sortOrder": 413,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_PUB",
+      "activity": {
+        "code": "PUB_OTHER",
+        "nameMs": "LAIN-LAIN PENERBITAN"
+      },
+      "option": {
+        "code": "TYPE_MEDIA",
+        "nameMs": "MEDIA"
+      },
+      "unit": {
+        "code": "publication",
+        "labelMs": "penerbitan"
+      },
+      "jamPerUnit": 0.25,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "3. PENERBITAN"
+        }
+      ],
+      "tags": [
+        "lain-lain",
+        "penerbitan"
+      ]
+    },
+    {
+      "id": "BTA_RES_GRANT_INTERNATIONAL_ROLE_LEAD",
+      "status": "active",
+      "sortOrder": 500,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_RES",
+      "activity": {
+        "code": "RES_GRANT_INTERNATIONAL",
+        "nameMs": "GERAN LUAR (ANTARABANGSA)"
+      },
+      "option": {
+        "code": "ROLE_LEAD",
+        "nameMs": "KETUA"
+      },
+      "unit": {
+        "code": "grant",
+        "labelMs": "geran"
+      },
+      "jamPerUnit": 6,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "4. PENYELIDIKAN"
+        }
+      ],
+      "tags": [
+        "antarabangsa",
+        "geran",
+        "ketua",
+        "penyelidikan"
+      ]
+    },
+    {
+      "id": "BTA_RES_GRANT_INTERNATIONAL_ROLE_MEMBER",
+      "status": "active",
+      "sortOrder": 501,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_RES",
+      "activity": {
+        "code": "RES_GRANT_INTERNATIONAL",
+        "nameMs": "GERAN LUAR (ANTARABANGSA)"
+      },
+      "option": {
+        "code": "ROLE_MEMBER",
+        "nameMs": "AHLI"
+      },
+      "unit": {
+        "code": "grant",
+        "labelMs": "geran"
+      },
+      "jamPerUnit": 4,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "4. PENYELIDIKAN"
+        }
+      ],
+      "tags": [
+        "ahli",
+        "antarabangsa",
+        "geran",
+        "penyelidikan"
+      ]
+    },
+    {
+      "id": "BTA_RES_GRANT_NATIONAL_ROLE_LEAD",
+      "status": "active",
+      "sortOrder": 502,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_RES",
+      "activity": {
+        "code": "RES_GRANT_NATIONAL",
+        "nameMs": "GERAN KEBANGSAAN (KEMENTERIAN)"
+      },
+      "option": {
+        "code": "ROLE_LEAD",
+        "nameMs": "KETUA"
+      },
+      "unit": {
+        "code": "grant",
+        "labelMs": "geran"
+      },
+      "jamPerUnit": 4,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "4. PENYELIDIKAN"
+        }
+      ],
+      "tags": [
+        "geran",
+        "kebangsaan",
+        "ketua",
+        "penyelidikan"
+      ]
+    },
+    {
+      "id": "BTA_RES_GRANT_NATIONAL_ROLE_MEMBER",
+      "status": "active",
+      "sortOrder": 503,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_RES",
+      "activity": {
+        "code": "RES_GRANT_NATIONAL",
+        "nameMs": "GERAN KEBANGSAAN (KEMENTERIAN)"
+      },
+      "option": {
+        "code": "ROLE_MEMBER",
+        "nameMs": "AHLI"
+      },
+      "unit": {
+        "code": "grant",
+        "labelMs": "geran"
+      },
+      "jamPerUnit": 2,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "4. PENYELIDIKAN"
+        }
+      ],
+      "tags": [
+        "ahli",
+        "geran",
+        "kebangsaan",
+        "penyelidikan"
+      ]
+    },
+    {
+      "id": "BTA_RES_GRANT_LOCAL_ROLE_LEAD",
+      "status": "active",
+      "sortOrder": 504,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_RES",
+      "activity": {
+        "code": "RES_GRANT_LOCAL",
+        "nameMs": "GERAN LUAR (TEMPATAN - INDUSTRI/ SWASTA/ NGO)"
+      },
+      "option": {
+        "code": "ROLE_LEAD",
+        "nameMs": "KETUA"
+      },
+      "unit": {
+        "code": "grant",
+        "labelMs": "geran"
+      },
+      "jamPerUnit": 5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "4. PENYELIDIKAN"
+        }
+      ],
+      "tags": [
+        "geran",
+        "ketua",
+        "penyelidikan",
+        "tempatan"
+      ]
+    },
+    {
+      "id": "BTA_RES_GRANT_LOCAL_ROLE_MEMBER",
+      "status": "active",
+      "sortOrder": 505,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_RES",
+      "activity": {
+        "code": "RES_GRANT_LOCAL",
+        "nameMs": "GERAN LUAR (TEMPATAN - INDUSTRI/ SWASTA/ NGO)"
+      },
+      "option": {
+        "code": "ROLE_MEMBER",
+        "nameMs": "AHLI"
+      },
+      "unit": {
+        "code": "grant",
+        "labelMs": "geran"
+      },
+      "jamPerUnit": 2.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "4. PENYELIDIKAN"
+        }
+      ],
+      "tags": [
+        "ahli",
+        "geran",
+        "penyelidikan",
+        "tempatan"
+      ]
+    },
+    {
+      "id": "BTA_RES_GRANT_COLLAB_ROLE_LEAD",
+      "status": "active",
+      "sortOrder": 506,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_RES",
+      "activity": {
+        "code": "RES_GRANT_COLLAB",
+        "nameMs": "GERAN KOLABORASI"
+      },
+      "option": {
+        "code": "ROLE_LEAD",
+        "nameMs": "KETUA"
+      },
+      "unit": {
+        "code": "grant",
+        "labelMs": "geran"
+      },
+      "jamPerUnit": 3,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "4. PENYELIDIKAN"
+        }
+      ],
+      "tags": [
+        "geran",
+        "ketua",
+        "kolaborasi",
+        "penyelidikan"
+      ]
+    },
+    {
+      "id": "BTA_RES_GRANT_COLLAB_ROLE_MEMBER",
+      "status": "active",
+      "sortOrder": 507,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_RES",
+      "activity": {
+        "code": "RES_GRANT_COLLAB",
+        "nameMs": "GERAN KOLABORASI"
+      },
+      "option": {
+        "code": "ROLE_MEMBER",
+        "nameMs": "AHLI"
+      },
+      "unit": {
+        "code": "grant",
+        "labelMs": "geran"
+      },
+      "jamPerUnit": 1.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "4. PENYELIDIKAN"
+        }
+      ],
+      "tags": [
+        "ahli",
+        "geran",
+        "kolaborasi",
+        "penyelidikan"
+      ]
+    },
+    {
+      "id": "BTA_RES_GRANT_UNIVERSITY_ROLE_LEAD",
+      "status": "active",
+      "sortOrder": 508,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_RES",
+      "activity": {
+        "code": "RES_GRANT_UNIVERSITY",
+        "nameMs": "GERAN UNIVERSITI"
+      },
+      "option": {
+        "code": "ROLE_LEAD",
+        "nameMs": "KETUA"
+      },
+      "unit": {
+        "code": "grant",
+        "labelMs": "geran"
+      },
+      "jamPerUnit": 2,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "4. PENYELIDIKAN"
+        }
+      ],
+      "tags": [
+        "geran",
+        "ketua",
+        "penyelidikan",
+        "universiti"
+      ]
+    },
+    {
+      "id": "BTA_RES_GRANT_UNIVERSITY_ROLE_MEMBER",
+      "status": "active",
+      "sortOrder": 509,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_RES",
+      "activity": {
+        "code": "RES_GRANT_UNIVERSITY",
+        "nameMs": "GERAN UNIVERSITI"
+      },
+      "option": {
+        "code": "ROLE_MEMBER",
+        "nameMs": "AHLI"
+      },
+      "unit": {
+        "code": "grant",
+        "labelMs": "geran"
+      },
+      "jamPerUnit": 1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "4. PENYELIDIKAN"
+        }
+      ],
+      "tags": [
+        "ahli",
+        "geran",
+        "penyelidikan",
+        "universiti"
+      ]
+    },
+    {
+      "id": "BTA_CONF_INTERNATIONAL_ROLE_PLENARY_KEYNOTE",
+      "status": "active",
+      "sortOrder": 600,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_CONF",
+      "activity": {
+        "code": "CONF_INTERNATIONAL",
+        "nameMs": "ANTARABANGSA"
+      },
+      "option": {
+        "code": "ROLE_PLENARY_KEYNOTE",
+        "nameMs": "PLENARY SPEAKER/ KEYNOTE SPEAKER"
+      },
+      "unit": {
+        "code": "session",
+        "labelMs": "penyertaan"
+      },
+      "jamPerUnit": 2,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "5. PERSIDANGAN"
+        }
+      ],
+      "tags": [
+        "antarabangsa",
+        "keynote",
+        "persidangan"
+      ]
+    },
+    {
+      "id": "BTA_CONF_INTERNATIONAL_ROLE_ORAL_PANEL_INVITED",
+      "status": "active",
+      "sortOrder": 601,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_CONF",
+      "activity": {
+        "code": "CONF_INTERNATIONAL",
+        "nameMs": "ANTARABANGSA"
+      },
+      "option": {
+        "code": "ROLE_ORAL_PANEL_INVITED",
+        "nameMs": "PEMBENTANG LISAN/ PANEL/ INVITED SPEAKER"
+      },
+      "unit": {
+        "code": "session",
+        "labelMs": "penyertaan"
+      },
+      "jamPerUnit": 1.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "5. PERSIDANGAN"
+        }
+      ],
+      "tags": [
+        "antarabangsa",
+        "pembentang-lisan",
+        "persidangan"
+      ]
+    },
+    {
+      "id": "BTA_CONF_INTERNATIONAL_ROLE_POSTER",
+      "status": "active",
+      "sortOrder": 602,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_CONF",
+      "activity": {
+        "code": "CONF_INTERNATIONAL",
+        "nameMs": "ANTARABANGSA"
+      },
+      "option": {
+        "code": "ROLE_POSTER",
+        "nameMs": "PEMBENTANG POSTER"
+      },
+      "unit": {
+        "code": "session",
+        "labelMs": "penyertaan"
+      },
+      "jamPerUnit": 0.75,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "5. PERSIDANGAN"
+        }
+      ],
+      "tags": [
+        "antarabangsa",
+        "persidangan",
+        "poster"
+      ]
+    },
+    {
+      "id": "BTA_CONF_INTERNATIONAL_ROLE_PARTICIPANT",
+      "status": "active",
+      "sortOrder": 603,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_CONF",
+      "activity": {
+        "code": "CONF_INTERNATIONAL",
+        "nameMs": "ANTARABANGSA"
+      },
+      "option": {
+        "code": "ROLE_PARTICIPANT",
+        "nameMs": "PESERTA"
+      },
+      "unit": {
+        "code": "session",
+        "labelMs": "penyertaan"
+      },
+      "jamPerUnit": 0.1,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "5. PERSIDANGAN"
+        }
+      ],
+      "tags": [
+        "antarabangsa",
+        "persidangan",
+        "peserta"
+      ]
+    },
+    {
+      "id": "BTA_CONF_NATIONAL_ROLE_PLENARY_KEYNOTE",
+      "status": "active",
+      "sortOrder": 604,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_CONF",
+      "activity": {
+        "code": "CONF_NATIONAL",
+        "nameMs": "TEMPATAN/ KEBANGSAAN"
+      },
+      "option": {
+        "code": "ROLE_PLENARY_KEYNOTE",
+        "nameMs": "PLENARY SPEAKER/ KEYNOTE SPEAKER"
+      },
+      "unit": {
+        "code": "session",
+        "labelMs": "penyertaan"
+      },
+      "jamPerUnit": 1.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "5. PERSIDANGAN"
+        }
+      ],
+      "tags": [
+        "kebangsaan",
+        "keynote",
+        "persidangan"
+      ]
+    },
+    {
+      "id": "BTA_CONF_NATIONAL_ROLE_ORAL_PANEL_INVITED",
+      "status": "active",
+      "sortOrder": 605,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_CONF",
+      "activity": {
+        "code": "CONF_NATIONAL",
+        "nameMs": "TEMPATAN/ KEBANGSAAN"
+      },
+      "option": {
+        "code": "ROLE_ORAL_PANEL_INVITED",
+        "nameMs": "PEMBENTANG LISAN/ PANEL/ INVITED SPEAKER"
+      },
+      "unit": {
+        "code": "session",
+        "labelMs": "penyertaan"
+      },
+      "jamPerUnit": 1.13,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "5. PERSIDANGAN"
+        }
+      ],
+      "tags": [
+        "kebangsaan",
+        "pembentang-lisan",
+        "persidangan"
+      ]
+    },
+    {
+      "id": "BTA_CONF_NATIONAL_ROLE_POSTER",
+      "status": "active",
+      "sortOrder": 606,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_CONF",
+      "activity": {
+        "code": "CONF_NATIONAL",
+        "nameMs": "TEMPATAN/ KEBANGSAAN"
+      },
+      "option": {
+        "code": "ROLE_POSTER",
+        "nameMs": "PEMBENTANG POSTER"
+      },
+      "unit": {
+        "code": "session",
+        "labelMs": "penyertaan"
+      },
+      "jamPerUnit": 0.56,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "5. PERSIDANGAN"
+        }
+      ],
+      "tags": [
+        "kebangsaan",
+        "persidangan",
+        "poster"
+      ]
+    },
+    {
+      "id": "BTA_CONF_NATIONAL_ROLE_PARTICIPANT",
+      "status": "active",
+      "sortOrder": 607,
+      "categoryId": "CAT_RESEARCH",
+      "subCategoryId": "SUB_CONF",
+      "activity": {
+        "code": "CONF_NATIONAL",
+        "nameMs": "TEMPATAN/ KEBANGSAAN"
+      },
+      "option": {
+        "code": "ROLE_PARTICIPANT",
+        "nameMs": "PESERTA"
+      },
+      "unit": {
+        "code": "session",
+        "labelMs": "penyertaan"
+      },
+      "jamPerUnit": 0.08,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "5. PERSIDANGAN"
+        }
+      ],
+      "tags": [
+        "kebangsaan",
+        "persidangan",
+        "peserta"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_VICE_CHANCELLOR",
+      "status": "active",
+      "sortOrder": 700,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_PAID_APPOINTMENT",
+        "nameMs": "LANTIKAN BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_VICE_CHANCELLOR",
+        "nameMs": "NAIB CANSELOR"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 20,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "berelaun",
+        "pentadbiran"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_DEPUTY_VC",
+      "status": "active",
+      "sortOrder": 701,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_PAID_APPOINTMENT",
+        "nameMs": "LANTIKAN BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_DEPUTY_VC",
+        "nameMs": "TIMBALAN NAIB CANSELOR"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 20,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "berelaun",
+        "pentadbiran"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_ASSISTANT_VC",
+      "status": "active",
+      "sortOrder": 702,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_PAID_APPOINTMENT",
+        "nameMs": "LANTIKAN BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_ASSISTANT_VC",
+        "nameMs": "PENOLONG NAIB CANSELOR"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 20,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "berelaun",
+        "pentadbiran"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_DEAN_DIRECTOR",
+      "status": "active",
+      "sortOrder": 703,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_PAID_APPOINTMENT",
+        "nameMs": "LANTIKAN BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_DEAN_DIRECTOR",
+        "nameMs": "DEKAN/ PENGARAH"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 20,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "berelaun",
+        "pentadbiran"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_DEPUTY_DEAN_DIRECTOR",
+      "status": "active",
+      "sortOrder": 704,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_PAID_APPOINTMENT",
+        "nameMs": "LANTIKAN BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_DEPUTY_DEAN_DIRECTOR",
+        "nameMs": "TIMBALAN DEKAN/ TIMBALAN PENGARAH"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 15,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "berelaun",
+        "pentadbiran"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_HEAD_DEPT_UNIT",
+      "status": "active",
+      "sortOrder": 705,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_PAID_APPOINTMENT",
+        "nameMs": "LANTIKAN BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_HEAD_DEPT_UNIT",
+        "nameMs": "KETUA JABATAN/ KETUA UNIT"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 10,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "berelaun",
+        "pentadbiran"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_HEAD_PROGRAM",
+      "status": "active",
+      "sortOrder": 706,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_PAID_APPOINTMENT",
+        "nameMs": "LANTIKAN BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_HEAD_PROGRAM",
+        "nameMs": "KETUA PROGRAM"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 12,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "berelaun",
+        "pentadbiran"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_CLUSTER_COORD",
+      "status": "active",
+      "sortOrder": 707,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_PAID_APPOINTMENT",
+        "nameMs": "LANTIKAN BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_CLUSTER_COORD",
+        "nameMs": "PENYELARAS GUGUSAN"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 12,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "berelaun",
+        "pentadbiran"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_POSTGRAD_COORD",
+      "status": "active",
+      "sortOrder": 708,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_PAID_APPOINTMENT",
+        "nameMs": "LANTIKAN BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_POSTGRAD_COORD",
+        "nameMs": "PENYELARAS PASCASISWAZAH"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 8,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "berelaun",
+        "pentadbiran"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_RES_COLLEGE_PRINCIPAL",
+      "status": "active",
+      "sortOrder": 709,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_PAID_APPOINTMENT",
+        "nameMs": "LANTIKAN BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_RES_COLLEGE_PRINCIPAL",
+        "nameMs": "PENGETUA KOLEJ KEDIAMAN"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 8,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "berelaun",
+        "pentadbiran"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_UNPAID_APPOINTMENT_APPOINTMENT_MINISTRY",
+      "status": "active",
+      "sortOrder": 710,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_UNPAID_APPOINTMENT",
+        "nameMs": "LANTIKAN TIDAK BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_MINISTRY",
+        "nameMs": "LANTIKAN OLEH KEMENTERIAN"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 0.4,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "pentadbiran",
+        "tidak-berelaun"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_UNPAID_APPOINTMENT_APPOINTMENT_VC",
+      "status": "active",
+      "sortOrder": 711,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_UNPAID_APPOINTMENT",
+        "nameMs": "LANTIKAN TIDAK BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_VC",
+        "nameMs": "LANTIKAN OLEH NAIB CANSELOR"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 0.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "pentadbiran",
+        "tidak-berelaun"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_UNPAID_APPOINTMENT_APPOINTMENT_DEPUTY_VC",
+      "status": "active",
+      "sortOrder": 712,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_UNPAID_APPOINTMENT",
+        "nameMs": "LANTIKAN TIDAK BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_DEPUTY_VC",
+        "nameMs": "LANTIKAN OLEH TIMBALAN NAIB CANSELOR"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 0.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "pentadbiran",
+        "tidak-berelaun"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_UNPAID_APPOINTMENT_APPOINTMENT_DEAN_DIRECTOR",
+      "status": "active",
+      "sortOrder": 713,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_UNPAID_APPOINTMENT",
+        "nameMs": "LANTIKAN TIDAK BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_DEAN_DIRECTOR",
+        "nameMs": "LANTIKAN OLEH DEKAN/ PENGARAH"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 0.5,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "pentadbiran",
+        "tidak-berelaun"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_UNPAID_APPOINTMENT_APPOINTMENT_HEAD_DEPT_UNIT",
+      "status": "active",
+      "sortOrder": 714,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_UNPAID_APPOINTMENT",
+        "nameMs": "LANTIKAN TIDAK BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_HEAD_DEPT_UNIT",
+        "nameMs": "LANTIKAN OLEH KETUA JABATAN/ KETUA UNIT"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 0.3,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "pentadbiran",
+        "tidak-berelaun"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_UNPAID_APPOINTMENT_APPOINTMENT_HEAD_PROGRAM",
+      "status": "active",
+      "sortOrder": 715,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_UNPAID_APPOINTMENT",
+        "nameMs": "LANTIKAN TIDAK BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_HEAD_PROGRAM",
+        "nameMs": "LANTIKAN OLEH KETUA PROGRAM"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 0.3,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "pentadbiran",
+        "tidak-berelaun"
+      ]
+    },
+    {
+      "id": "BTA_ADMIN_UNPAID_APPOINTMENT_APPOINTMENT_RES_COLLEGE_PRINCIPAL",
+      "status": "active",
+      "sortOrder": 716,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_ADMIN",
+      "activity": {
+        "code": "ADMIN_UNPAID_APPOINTMENT",
+        "nameMs": "LANTIKAN TIDAK BERELAUN"
+      },
+      "option": {
+        "code": "APPOINTMENT_RES_COLLEGE_PRINCIPAL",
+        "nameMs": "LANTIKAN OLEH PENGETUA KOLEJ KEDIAMAN"
+      },
+      "unit": {
+        "code": "appointment",
+        "labelMs": "lantikan"
+      },
+      "jamPerUnit": 0.2,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "6. PENTADBIRAN"
+        }
+      ],
+      "tags": [
+        "pentadbiran",
+        "tidak-berelaun"
+      ]
+    },
+    {
+      "id": "BTA_SVC_UNI_COMMUNITY_ALL_LEVELS_ROLES",
+      "status": "active",
+      "sortOrder": 800,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_UNI_COMMUNITY",
+        "nameMs": "KHIDMAT UNIVERSITI/ MASYARAKAT"
+      },
+      "option": {
+        "code": "ALL_LEVELS_ROLES",
+        "nameMs": "SEMUA PERINGKAT/ KATEGORI/ PERANAN"
+      },
+      "unit": {
+        "code": "day",
+        "labelMs": "hari"
+      },
+      "jamPerUnit": 0.3,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "komuniti",
+        "perkhidmatan",
+        "semua-peranan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CONSULTATION_ROLE_LEAD",
+      "status": "active",
+      "sortOrder": 801,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CONSULTATION",
+        "nameMs": "KHIDMAT RUNDINGAN"
+      },
+      "option": {
+        "code": "ROLE_LEAD",
+        "nameMs": "KETUA"
+      },
+      "unit": {
+        "code": "project",
+        "labelMs": "projek"
+      },
+      "jamPerUnit": 6,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "ketua",
+        "perkhidmatan",
+        "rundingan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CONSULTATION_ROLE_MEMBER",
+      "status": "active",
+      "sortOrder": 802,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CONSULTATION",
+        "nameMs": "KHIDMAT RUNDINGAN"
+      },
+      "option": {
+        "code": "ROLE_MEMBER",
+        "nameMs": "AHLI"
+      },
+      "unit": {
+        "code": "project",
+        "labelMs": "projek"
+      },
+      "jamPerUnit": 3,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "ahli",
+        "perkhidmatan",
+        "rundingan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_CLINIC",
+      "status": "active",
+      "sortOrder": 803,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_CLINIC",
+        "nameMs": "KLINIK"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_SURGERY",
+      "status": "active",
+      "sortOrder": 804,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_SURGERY",
+        "nameMs": "PEMBEDAHAN"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_PROCEDURE",
+      "status": "active",
+      "sortOrder": 805,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_PROCEDURE",
+        "nameMs": "PROSEDUR"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_WARD_ROUND",
+      "status": "active",
+      "sortOrder": 806,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_WARD_ROUND",
+        "nameMs": "RONDAAN WAD"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_CME",
+      "status": "active",
+      "sortOrder": 807,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_CME",
+        "nameMs": "PENDIDIKAN PERUBATAN BERTERUSAN"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_CLINICAL_MEETING",
+      "status": "active",
+      "sortOrder": 808,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_CLINICAL_MEETING",
+        "nameMs": "MESYUARAT KLINIKAL"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.01,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_ON_CALL",
+      "status": "active",
+      "sortOrder": 809,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_ON_CALL",
+        "nameMs": "ATAS PANGGILAN"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.029,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_MEDICAL_OFFICER_TEACHING",
+      "status": "active",
+      "sortOrder": 810,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_MEDICAL_OFFICER_TEACHING",
+        "nameMs": "PENGAJARAN PEGAWAI PERUBATAN"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_DIAGNOSTIC_WORK",
+      "status": "active",
+      "sortOrder": 811,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_DIAGNOSTIC_WORK",
+        "nameMs": "KERJA DIAGNOSTIK"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_COMMUNITY_EDU",
+      "status": "active",
+      "sortOrder": 812,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_COMMUNITY_EDU",
+        "nameMs": "PENDIDIKAN KOMUNITI"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_CASE_INVESTIGATION_VERIFICATION",
+      "status": "active",
+      "sortOrder": 813,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_CASE_INVESTIGATION_VERIFICATION",
+        "nameMs": "SIASATAN DAN PENGESAHAN KES"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_QUARANTINE",
+      "status": "active",
+      "sortOrder": 814,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_QUARANTINE",
+        "nameMs": "KUARANTIN"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_SURVEILLANCE",
+      "status": "active",
+      "sortOrder": 815,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_SURVEILLANCE",
+        "nameMs": "SURVELAN"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    },
+    {
+      "id": "BTA_SVC_CLINICAL_TYPE_PUBLIC_HEALTH_CONSULTATION",
+      "status": "active",
+      "sortOrder": 816,
+      "categoryId": "CAT_ADMIN_SVC",
+      "subCategoryId": "SUB_SVC",
+      "activity": {
+        "code": "SVC_CLINICAL",
+        "nameMs": "KHIDMAT KLINIKAL"
+      },
+      "option": {
+        "code": "TYPE_PUBLIC_HEALTH_CONSULTATION",
+        "nameMs": "PERUNDINGAN KESIHATAN AWAM"
+      },
+      "unit": {
+        "code": "hour",
+        "labelMs": "jam"
+      },
+      "jamPerUnit": 0.019,
+      "calc": {
+        "type": "multiply"
+      },
+      "references": [
+        {
+          "doc": "Pemberat setiap tugas.docx",
+          "section": "7. PERKHIDMATAN"
+        }
+      ],
+      "tags": [
+        "klinikal",
+        "perkhidmatan"
+      ]
+    }
+  ]
+}
