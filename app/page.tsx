@@ -41,7 +41,8 @@ export default function HomePage() {
 
   return (
     <main className="container">
-      <h1>BTA UMS Calculator (MVP)</h1>
+      <h1>BTA UMS Calculator</h1>
+      <p>Enter activity inputs below to calculate your BTA UMS totals.</p>
       <label htmlFor="activity-input">ActivityInput JSON</label>
       <textarea
         id="activity-input"
