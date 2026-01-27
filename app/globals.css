@@ -1,13 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   color-scheme: light;
   font-family: "Inter", system-ui, sans-serif;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  padding: 2rem;
+  @apply bg-slate-50 text-slate-900;
 }
