@@ -4,9 +4,8 @@
 
 :root {
   color-scheme: light;
-  font-family: "Inter", system-ui, sans-serif;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900;
+  @apply bg-slate-50 text-slate-900 font-sans antialiased;
 }
