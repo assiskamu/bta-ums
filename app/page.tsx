@@ -78,7 +78,9 @@ type Entry = {
   units: string;
   baseQuantity: number;
   period: Period;
+  jamPerUnit?: number;
   computedWeeklyHours: number;
+  hours?: number;
 };
 
 type DraftEntry = {
@@ -130,6 +132,17 @@ const parseUnitsQuantity = (units: string) => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
+const normalizeNumber = (value: unknown, fallback = 0) => {
+  const parsed =
+    typeof value === "number" ? value : Number.parseFloat(String(value));
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const getEntryWeeklyHours = (entry: {
+  computedWeeklyHours?: number;
+  hours?: number;
+}) => normalizeNumber(entry.computedWeeklyHours ?? entry.hours ?? 0);
+
 const normalizeStoredState = (value: StoredState | null): StoredState | null => {
   if (!value) {
     return null;
@@ -160,11 +173,11 @@ const normalizeStoredState = (value: StoredState | null): StoredState | null => 
             ? entry.baseQuantity
             : parseUnitsQuantity(entry.units ?? ""),
           period: PERIODS.includes(entry.period) ? entry.period : PERIODS[0],
-          computedWeeklyHours: Number.isFinite(entry.computedWeeklyHours)
-            ? entry.computedWeeklyHours
-            : Number.isFinite(entry.hours)
-              ? entry.hours
-              : 0,
+          jamPerUnit: Number.isFinite(entry.jamPerUnit)
+            ? entry.jamPerUnit
+            : undefined,
+          computedWeeklyHours: getEntryWeeklyHours(entry),
+          hours: Number.isFinite(entry.hours) ? entry.hours : undefined,
         }));
   });
 
@@ -386,6 +399,7 @@ export default function HomePage() {
       units: `${quantityValue} ${formatUnitLabel(selectedOption.unitLabel)}`,
       baseQuantity: quantityValue,
       period,
+      jamPerUnit: selectedOption.jamPerUnit,
       computedWeeklyHours: totalWeeklyHours,
     };
 
@@ -435,7 +449,7 @@ export default function HomePage() {
   const totals = useMemo(() => {
     const breakdown = TABS.reduce<Record<TabKey, number>>((accumulator, tab) => {
       const tabTotal = entriesByTab[tab].reduce(
-        (sum, entry) => sum + (entry.computedWeeklyHours || 0),
+        (sum, entry) => sum + getEntryWeeklyHours(entry),
         0
       );
       accumulator[tab] = tabTotal;
@@ -524,6 +538,7 @@ export default function HomePage() {
       units: `${quantityValue} ${formatUnitLabel(selectedOption.unitLabel)}`,
       baseQuantity: quantityValue,
       period,
+      jamPerUnit: selectedOption.jamPerUnit,
       computedWeeklyHours: totalWeeklyHours,
     } satisfies Entry;
   };
@@ -963,7 +978,7 @@ export default function HomePage() {
                               </div>
                             </td>
                             <td className="px-3 py-3 text-right text-slate-700">
-                              {entry.computedWeeklyHours.toFixed(1)}
+                              {getEntryWeeklyHours(entry).toFixed(1)}
                             </td>
                             <td className="px-3 py-3 text-right">
                               <button
