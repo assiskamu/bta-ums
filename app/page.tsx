@@ -12,7 +12,11 @@ import {
   type PeriodSettings,
   sumMinimumTargetHours,
 } from "../packages/core/src";
-import { getCatalogActivitiesBySubCategory } from "../lib/catalog";
+import {
+  getCatalogActivitiesBySubCategory,
+  type CatalogActivity,
+  type CatalogActivityOption,
+} from "../lib/catalog";
 
 const PATHWAYS = [
   "Guru",
@@ -142,6 +146,9 @@ const getEntryWeeklyHours = (entry: {
   computedWeeklyHours?: number;
   hours?: number;
 }) => normalizeNumber(entry.computedWeeklyHours ?? entry.hours ?? 0);
+
+const getRate = (option: CatalogActivityOption | null): number =>
+  option?.jamPerUnit ?? 0;
 
 const normalizeStoredState = (value: StoredState | null): StoredState | null => {
   if (!value) {
@@ -341,16 +348,16 @@ export default function HomePage() {
     const draft = draftsByTab[tab];
     const subCategoryId = TAB_SUBCATEGORIES[tab];
     const activities = catalogActivitiesBySubCategory[subCategoryId] ?? [];
-    const selectedActivity = activities.find(
-      (activity) => activity.activityCode === draft.activityCode
-    );
-    const selectedOption = selectedActivity?.options.find(
-      (option) => option.id === draft.optionId
-    );
+    const selectedActivity: CatalogActivity | null =
+      activities.find((activity) => activity.activityCode === draft.activityCode) ??
+      null;
+    const selectedOption: CatalogActivityOption | null =
+      selectedActivity?.options.find((option) => option.id === draft.optionId) ??
+      null;
     const quantityValue = Number.parseFloat(draft.quantity);
     const totalWeeklyHours = calculateWeeklyHours({
       quantity: quantityValue,
-      jamPerUnit: selectedOption?.jamPerUnit ?? 0,
+      jamPerUnit: getRate(selectedOption),
       period,
       settings: periodSettings,
     });
@@ -504,8 +511,9 @@ export default function HomePage() {
     const preferredOptionIds = shouldUsePreferences
       ? (DEMO_OPTION_PREFERENCES[tab] ?? [])
       : [];
-    let selectedActivity = activities[0];
-    let selectedOption = activities[0]?.options[0];
+    let selectedActivity: CatalogActivity | null = activities[0] ?? null;
+    let selectedOption: CatalogActivityOption | null =
+      activities[0]?.options[0] ?? null;
 
     for (const optionId of preferredOptionIds) {
       const activityMatch = activities.find((activity) =>
@@ -513,21 +521,21 @@ export default function HomePage() {
       );
       if (activityMatch) {
         selectedActivity = activityMatch;
-        selectedOption = activityMatch.options.find(
-          (option) => option.id === optionId
-        );
+        const foundOption =
+          activityMatch.options.find((option) => option.id === optionId) ?? null;
+        selectedOption = foundOption;
         break;
       }
     }
 
-    if (!selectedOption) {
+    if (!selectedActivity || !selectedOption) {
       return null;
     }
 
     const quantityValue = 1;
     const totalWeeklyHours = calculateWeeklyHours({
       quantity: quantityValue,
-      jamPerUnit: selectedOption.jamPerUnit,
+      jamPerUnit: getRate(selectedOption),
       period,
       settings: periodSettings,
     });
@@ -582,20 +590,22 @@ export default function HomePage() {
   const activeSubCategoryId = TAB_SUBCATEGORIES[activeTab];
   const activitiesForActiveTab =
     catalogActivitiesBySubCategory[activeSubCategoryId] ?? [];
-  const selectedActivity = activitiesForActiveTab.find(
-    (activity) => activity.activityCode === draftsByTab[activeTab].activityCode
-  );
+  const selectedActivity: CatalogActivity | null =
+    activitiesForActiveTab.find(
+      (activity) => activity.activityCode === draftsByTab[activeTab].activityCode
+    ) ?? null;
   const optionsForSelectedActivity = selectedActivity?.options ?? [];
-  const selectedOption = optionsForSelectedActivity.find(
-    (option) => option.id === draftsByTab[activeTab].optionId
-  );
+  const selectedOption: CatalogActivityOption | null =
+    optionsForSelectedActivity.find(
+      (option) => option.id === draftsByTab[activeTab].optionId
+    ) ?? null;
   const selectedOptionReferences = selectedOption?.references ?? [];
   const selectedOptionNotes = selectedOption?.constraintsNotesMs ?? "";
   const selectedOptionHasInfo =
     selectedOptionReferences.length > 0 || Boolean(selectedOptionNotes);
   const quantityValue = Number.parseFloat(draftsByTab[activeTab].quantity);
   const normalizedQuantity = Number.isFinite(quantityValue) ? quantityValue : 0;
-  const jamPerUnit = selectedOption?.jamPerUnit ?? 0;
+  const jamPerUnit = getRate(selectedOption);
   const unitLabel = selectedOption?.unitLabel ?? "-";
   const formattedUnitLabel = unitLabel !== "-" ? formatUnitLabel(unitLabel) : "-";
   const unitKey = unitLabel.toLowerCase();
@@ -604,6 +614,11 @@ export default function HomePage() {
     step: 1,
     allowDecimal: false,
   };
+  const isQuantityPositive = Number.isFinite(quantityValue) && quantityValue > 0;
+  const isQuantityStepValid = quantityConfig.allowDecimal
+    ? Number.isInteger(quantityValue * 2)
+    : Number.isInteger(quantityValue);
+  const isQuantityValid = isQuantityPositive && isQuantityStepValid;
   const totalDraftWeeklyHours = calculateWeeklyHours({
     quantity: normalizedQuantity,
     jamPerUnit,
@@ -621,9 +636,9 @@ export default function HomePage() {
       ? `${normalizedQuantity} × ${jamPerUnit.toFixed(1)} = ${totalDraftWeeklyHours.toFixed(1)} jam/minggu`
       : `${normalizedQuantity} × ${jamPerUnit.toFixed(1)} ÷ ${periodDivider} = ${totalDraftWeeklyHours.toFixed(1)} jam/minggu`;
   const rateText =
-    unitLabel === "-"
-      ? "-"
-      : `${jamPerUnit.toFixed(1)} jam / ${formattedUnitLabel}`;
+    selectedOption
+      ? `${jamPerUnit.toFixed(1)} jam / ${formattedUnitLabel}`
+      : "0.0 jam / -";
 
   useEffect(() => {
     if (selectedOption) {
@@ -915,7 +930,8 @@ export default function HomePage() {
                 <button
                   type="button"
                   onClick={() => handleAddEntry(activeTab)}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                  disabled={!selectedOption || !isQuantityValid}
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
                 >
                   Tambah
                 </button>
