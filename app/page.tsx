@@ -13,12 +13,16 @@ import {
   sumMinimumTargetHours,
 } from "../packages/core/src";
 import {
-  getCatalogActivitiesBySubCategory,
-  getCatalogMeta,
+  BASE_CATALOG_DATA,
+  buildCatalogActivitiesBySubCategory,
+  normalizeCatalogItems,
+  type CatalogItem,
+  type CatalogRawData,
   type CatalogActivity,
   type CatalogActivityOption,
 } from "../lib/catalog";
 import { exportBtaPdf } from "../lib/exportPdf";
+import packageJson from "../package.json";
 
 const PATHWAYS = [
   "Guru",
@@ -66,10 +70,14 @@ const QUANTITY_CONFIG: Record<
 > = {
   jam: { label: "Jumlah jam", step: 0.5, allowDecimal: true },
   pelajar: { label: "Bilangan pelajar", step: 1, allowDecimal: false },
+  projek: { label: "Bilangan projek", step: 1, allowDecimal: false },
   penerbitan: { label: "Bilangan penerbitan", step: 1, allowDecimal: false },
   geran: { label: "Bilangan geran", step: 1, allowDecimal: false },
   hari: { label: "Bilangan hari", step: 1, allowDecimal: false },
   lantikan: { label: "Bilangan lantikan", step: 1, allowDecimal: false },
+  kes: { label: "Bilangan kes", step: 1, allowDecimal: false },
+  sesi: { label: "Bilangan sesi", step: 1, allowDecimal: false },
+  "lain-lain": { label: "Bilangan unit", step: 1, allowDecimal: false },
 };
 
 const formatUnitLabel = (label: string) =>
@@ -117,9 +125,40 @@ const sanitizeFilePart = (value: string) => {
 const formatDateForFilename = (date: Date) =>
   date.toISOString().slice(0, 10);
 
+const createAdminId = () => {
+  const random = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `BTA_ADMIN_${Date.now()}_${random}`;
+};
+
+const createCodeFromLabel = (value: string) =>
+  value
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+const buildReferenceText = (
+  references: { doc: string; section: string; page?: string }[]
+) => {
+  if (!references.length) {
+    return "-";
+  }
+  return references
+    .map(
+      (reference) =>
+        `${reference.doc} ${reference.section}${
+          reference.page ? ` (ms ${reference.page})` : ""
+        }`
+    )
+    .join("; ");
+};
+
 type Entry = {
   id: string;
   activity: string;
+  activityName?: string;
+  optionName?: string;
+  optionId?: string;
   units: string;
   baseQuantity: number;
   period: Period;
@@ -131,7 +170,23 @@ type Entry = {
 type DraftEntry = {
   activityCode: string;
   optionId: string;
+  activityQuery: string;
+  optionQuery: string;
   quantity: string;
+};
+
+type AdminFormState = {
+  subCategoryId: string;
+  activityName: string;
+  optionName: string;
+  unitCode: string;
+  unitLabel: string;
+  jamPerUnit: string;
+  tags: string;
+  notes: string;
+  referenceDoc: string;
+  referenceSection: string;
+  referencePage: string;
 };
 
 type StoredState = {
@@ -143,6 +198,29 @@ type StoredState = {
 };
 
 const STORAGE_KEY = "bta-ums-v1";
+const ADMIN_CATALOG_STORAGE_KEY = "bta-katalog-admin-v1";
+const APP_VERSION = packageJson.version ?? "0.0.0";
+const UNIT_OPTIONS = [
+  { code: "hour", label: "jam" },
+  { code: "student", label: "pelajar" },
+  { code: "project", label: "projek" },
+  { code: "publication", label: "penerbitan" },
+  { code: "grant", label: "geran" },
+  { code: "day", label: "hari" },
+  { code: "appointment", label: "lantikan" },
+  { code: "case", label: "kes" },
+  { code: "session", label: "sesi" },
+  { code: "other", label: "lain-lain" },
+];
+const TAB_SORT_BASE: Record<TabKey, number> = {
+  Pengajaran: 190,
+  Penyeliaan: 290,
+  Penerbitan: 490,
+  Penyelidikan: 590,
+  Persidangan: 690,
+  Pentadbiran: 790,
+  Perkhidmatan: 890,
+};
 const DEMO_SUBCATEGORY_IDS = [
   "SUB_TEACH",
   "SUB_SUP",
@@ -163,7 +241,13 @@ const createEmptyEntries = () =>
 
 const createEmptyDrafts = () =>
   TABS.reduce<Record<TabKey, DraftEntry>>((accumulator, tab) => {
-    accumulator[tab] = { activityCode: "", optionId: "", quantity: "" };
+    accumulator[tab] = {
+      activityCode: "",
+      optionId: "",
+      activityQuery: "",
+      optionQuery: "",
+      quantity: "",
+    };
     return accumulator;
   }, {} as Record<TabKey, DraftEntry>);
 
@@ -217,6 +301,15 @@ const normalizeStoredState = (value: StoredState | null): StoredState | null => 
         .map((entry) => ({
           id: entry.id ?? `${tab}-${Date.now()}`,
           activity: entry.activity,
+          activityName:
+            typeof entry.activityName === "string"
+              ? entry.activityName
+              : splitActivityLabel(entry.activity).activityName,
+          optionName:
+            typeof entry.optionName === "string"
+              ? entry.optionName
+              : splitActivityLabel(entry.activity).optionName,
+          optionId: typeof entry.optionId === "string" ? entry.optionId : undefined,
           units: entry.units ?? "-",
           baseQuantity: Number.isFinite(entry.baseQuantity)
             ? entry.baseQuantity
@@ -254,6 +347,27 @@ export default function HomePage() {
   const [entriesByTab, setEntriesByTab] = useState(createEmptyEntries);
   const [draftsByTab, setDraftsByTab] = useState(createEmptyDrafts);
   const [errorsByTab, setErrorsByTab] = useState(createEmptyErrors);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [adminCatalogData, setAdminCatalogData] =
+    useState<CatalogRawData | null>(null);
+  const [catalogExpandedByTab, setCatalogExpandedByTab] = useState(() =>
+    TABS.reduce<Record<TabKey, boolean>>((accumulator, tab) => {
+      accumulator[tab] = true;
+      return accumulator;
+    }, {} as Record<TabKey, boolean>)
+  );
+  const [catalogSearchByTab, setCatalogSearchByTab] = useState(() =>
+    TABS.reduce<Record<TabKey, string>>((accumulator, tab) => {
+      accumulator[tab] = "";
+      return accumulator;
+    }, {} as Record<TabKey, string>)
+  );
+  const [catalogUnitFilterByTab, setCatalogUnitFilterByTab] = useState(() =>
+    TABS.reduce<Record<TabKey, string>>((accumulator, tab) => {
+      accumulator[tab] = "";
+      return accumulator;
+    }, {} as Record<TabKey, string>)
+  );
   const [hoveredInfoOptionId, setHoveredInfoOptionId] = useState<string | null>(
     null
   );
@@ -263,12 +377,40 @@ export default function HomePage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const quantityInputRef = useRef<HTMLInputElement>(null);
-
-  const catalogActivitiesBySubCategory = useMemo(
-    () => getCatalogActivitiesBySubCategory(),
-    []
+  const importCatalogInputRef = useRef<HTMLInputElement>(null);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [adminEditingItemId, setAdminEditingItemId] = useState<string | null>(
+    null
   );
-  const catalogMeta = useMemo(() => getCatalogMeta(), []);
+  const [adminFormState, setAdminFormState] = useState<AdminFormState>({
+    subCategoryId: TAB_SUBCATEGORIES[TABS[0]],
+    activityName: "",
+    optionName: "",
+    unitCode: UNIT_OPTIONS[0]?.code ?? "hour",
+    unitLabel: UNIT_OPTIONS[0]?.label ?? "jam",
+    jamPerUnit: "",
+    tags: "",
+    notes: "",
+    referenceDoc: "",
+    referenceSection: "",
+    referencePage: "",
+  });
+
+  const activeCatalogData = adminCatalogData ?? BASE_CATALOG_DATA;
+  const catalogItems = useMemo(
+    () => normalizeCatalogItems(activeCatalogData),
+    [activeCatalogData]
+  );
+  const catalogActivitiesBySubCategory = useMemo(
+    () => buildCatalogActivitiesBySubCategory(catalogItems),
+    [catalogItems]
+  );
+  const catalogItemById = useMemo(
+    () => new Map(catalogItems.map((item) => [item.id, item])),
+    [catalogItems]
+  );
+  const catalogMeta = activeCatalogData.meta ?? null;
+  const isAdminCatalogActive = Boolean(adminCatalogData);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -296,6 +438,26 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const savedCatalog = window.localStorage.getItem(ADMIN_CATALOG_STORAGE_KEY);
+    if (!savedCatalog) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(savedCatalog) as CatalogRawData;
+      if (Array.isArray(parsed.items)) {
+        setAdminCatalogData(parsed);
+      }
+    } catch (error) {
+      console.error("Gagal memuatkan katalog pentadbir", error);
+    }
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (toastTimeoutRef.current) {
         clearTimeout(toastTimeoutRef.current);
@@ -311,6 +473,37 @@ export default function HomePage() {
     toastTimeoutRef.current = setTimeout(() => {
       setToastMessage(null);
     }, 3500);
+  };
+
+  const persistAdminCatalog = (data: CatalogRawData) => {
+    setAdminCatalogData(data);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(
+        ADMIN_CATALOG_STORAGE_KEY,
+        JSON.stringify(data)
+      );
+    }
+  };
+
+  const createEditableCatalog = () =>
+    JSON.parse(
+      JSON.stringify(adminCatalogData ?? BASE_CATALOG_DATA)
+    ) as CatalogRawData;
+
+  const resetAdminForm = (subCategoryId: string) => {
+    setAdminFormState({
+      subCategoryId,
+      activityName: "",
+      optionName: "",
+      unitCode: UNIT_OPTIONS[0]?.code ?? "hour",
+      unitLabel: UNIT_OPTIONS[0]?.label ?? "jam",
+      jamPerUnit: "",
+      tags: "",
+      notes: "",
+      referenceDoc: "",
+      referenceSection: "",
+      referencePage: "",
+    });
   };
 
   useEffect(() => {
@@ -350,21 +543,37 @@ export default function HomePage() {
     }));
   };
 
-  const handleActivityChange = (tab: TabKey, activityCode: string) => {
+  const handleActivityChange = (tab: TabKey, activityQuery: string) => {
+    const normalizedQuery = activityQuery.trim().toLowerCase();
     const subCategoryId = TAB_SUBCATEGORIES[tab];
     const activities = catalogActivitiesBySubCategory[subCategoryId] ?? [];
     const selectedActivity = activities.find(
-      (activity) => activity.activityCode === activityCode
+      (activity) => activity.activityName.toLowerCase() === normalizedQuery
     );
     updateDraft(tab, {
-      activityCode,
+      activityCode: selectedActivity?.activityCode ?? "",
+      activityQuery,
       optionId: selectedActivity?.options[0]?.id ?? "",
+      optionQuery: selectedActivity?.options[0]?.optionName ?? "",
       quantity: "",
     });
   };
 
-  const handleOptionChange = (tab: TabKey, optionId: string) => {
-    updateDraft(tab, { optionId, quantity: "" });
+  const handleOptionChange = (tab: TabKey, optionQuery: string) => {
+    const normalizedQuery = optionQuery.trim().toLowerCase();
+    const subCategoryId = TAB_SUBCATEGORIES[tab];
+    const activities = catalogActivitiesBySubCategory[subCategoryId] ?? [];
+    const selectedActivity = activities.find(
+      (activity) => activity.activityCode === draftsByTab[tab].activityCode
+    );
+    const selectedOption = selectedActivity?.options.find(
+      (option) => option.optionName.toLowerCase() === normalizedQuery
+    );
+    updateDraft(tab, {
+      optionId: selectedOption?.id ?? "",
+      optionQuery,
+      quantity: "",
+    });
   };
 
   const handleQuantityChange = (tab: TabKey, quantity: string) => {
@@ -446,6 +655,9 @@ export default function HomePage() {
     const newEntry: Entry = {
       id: `${tab}-${Date.now()}`,
       activity: `${selectedActivity.activityName} — ${selectedOption.optionName}`,
+      activityName: selectedActivity.activityName,
+      optionName: selectedOption.optionName,
+      optionId: selectedOption.id,
       units: `${quantityValue} ${formatUnitLabel(selectedOption.unitLabel)}`,
       baseQuantity: quantityValue,
       period,
@@ -463,6 +675,8 @@ export default function HomePage() {
       [tab]: {
         activityCode: "",
         optionId: "",
+        activityQuery: "",
+        optionQuery: "",
         quantity: "",
       },
     }));
@@ -485,7 +699,7 @@ export default function HomePage() {
     }
 
     const confirmed = window.confirm(
-      "Anda pasti mahu padam semua rekod aktiviti?"
+      "Anda pasti mahu padam semua rekod kiraan?"
     );
     if (!confirmed) {
       return;
@@ -494,6 +708,219 @@ export default function HomePage() {
     setEntriesByTab(createEmptyEntries());
     setDraftsByTab(createEmptyDrafts());
     setErrorsByTab(createEmptyErrors());
+  };
+
+  const handleOpenAdminAdd = (tab: TabKey) => {
+    setAdminEditingItemId(null);
+    resetAdminForm(TAB_SUBCATEGORIES[tab]);
+    setIsAdminModalOpen(true);
+  };
+
+  const handleOpenAdminEdit = (item: CatalogItem) => {
+    setAdminEditingItemId(item.id);
+    setAdminFormState({
+      subCategoryId: item.subCategoryId,
+      activityName: item.activityName,
+      optionName: item.optionName,
+      unitCode: item.unitCode,
+      unitLabel: item.unitLabel,
+      jamPerUnit: item.jamPerUnit.toString(),
+      tags: item.tags?.join(", ") ?? "",
+      notes: item.constraintsNotesMs ?? "",
+      referenceDoc: item.references?.[0]?.doc ?? "",
+      referenceSection: item.references?.[0]?.section ?? "",
+      referencePage: item.references?.[0]?.page ?? "",
+    });
+    setIsAdminModalOpen(true);
+  };
+
+  const handleAdminDelete = (item: CatalogItem) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const confirmed = window.confirm(
+      `Padam aktiviti "${item.activityName} — ${item.optionName}" daripada katalog?`
+    );
+    if (!confirmed) {
+      return;
+    }
+    const nextCatalog = createEditableCatalog();
+    nextCatalog.items = nextCatalog.items.filter((entry) => entry.id !== item.id);
+    persistAdminCatalog(nextCatalog);
+    showToast("Aktiviti katalog berjaya dipadam.");
+  };
+
+  const getNextSortOrder = (subCategoryId: string, items: CatalogItem[]) => {
+    const tab = TABS.find((tabKey) => TAB_SUBCATEGORIES[tabKey] === subCategoryId);
+    const baseOrder = tab ? TAB_SORT_BASE[tab] : 0;
+    const existingOrders = items
+      .filter((entry) => entry.subCategoryId === subCategoryId)
+      .map((entry) => entry.sortOrder);
+    const maxOrder =
+      existingOrders.length > 0 ? Math.max(...existingOrders) : baseOrder;
+    let nextOrder = Math.max(baseOrder, maxOrder + 10);
+    while (existingOrders.includes(nextOrder)) {
+      nextOrder += 10;
+    }
+    return nextOrder;
+  };
+
+  const handleAdminSave = () => {
+    const activityName = adminFormState.activityName.trim();
+    const optionName = adminFormState.optionName.trim();
+    const jamPerUnit = Number.parseFloat(adminFormState.jamPerUnit);
+    if (!activityName || !optionName) {
+      showToast("Aktiviti dan kategori aktiviti wajib diisi.");
+      return;
+    }
+    if (!Number.isFinite(jamPerUnit) || jamPerUnit <= 0) {
+      showToast("Kadar mesti lebih daripada 0.");
+      return;
+    }
+
+    const unitLabel = adminFormState.unitLabel.trim();
+    const unitCode = adminFormState.unitCode.trim() || createCodeFromLabel(unitLabel);
+    const tags = adminFormState.tags
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+    const references =
+      adminFormState.referenceDoc.trim() || adminFormState.referenceSection.trim()
+        ? [
+            {
+              doc: adminFormState.referenceDoc.trim() || "-",
+              section: adminFormState.referenceSection.trim() || "-",
+              page: adminFormState.referencePage.trim() || undefined,
+            },
+          ]
+        : [];
+    const notes = adminFormState.notes.trim();
+    const nextCatalog = createEditableCatalog();
+    const activityCode = createCodeFromLabel(activityName) || createAdminId();
+    const optionCode = createCodeFromLabel(optionName) || createAdminId();
+
+    if (adminEditingItemId) {
+      const index = nextCatalog.items.findIndex(
+        (entry) => entry.id === adminEditingItemId
+      );
+      if (index >= 0) {
+        const existing = nextCatalog.items[index];
+        const shouldReorder =
+          existing.subCategoryId !== adminFormState.subCategoryId;
+        nextCatalog.items[index] = {
+          ...existing,
+          subCategoryId: adminFormState.subCategoryId,
+          activity: {
+            code: activityCode,
+            nameMs: activityName,
+          },
+          option: {
+            code: optionCode,
+            nameMs: optionName,
+          },
+          unit: {
+            code: unitCode,
+            labelMs: unitLabel,
+          },
+          jamPerUnit,
+          constraints: notes ? { notesMs: notes } : undefined,
+          references,
+          tags,
+          sortOrder: shouldReorder
+            ? getNextSortOrder(adminFormState.subCategoryId, catalogItems)
+            : existing.sortOrder ?? getNextSortOrder(adminFormState.subCategoryId, catalogItems),
+        };
+      }
+    } else {
+      const newItemId = createAdminId();
+      const sortOrder = getNextSortOrder(adminFormState.subCategoryId, catalogItems);
+      nextCatalog.items.push({
+        id: newItemId,
+        status: "active",
+        sortOrder,
+        subCategoryId: adminFormState.subCategoryId,
+        activity: {
+          code: activityCode,
+          nameMs: activityName,
+        },
+        option: {
+          code: optionCode,
+          nameMs: optionName,
+        },
+        unit: {
+          code: unitCode,
+          labelMs: unitLabel,
+        },
+        jamPerUnit,
+        constraints: notes ? { notesMs: notes } : undefined,
+        references,
+        tags,
+      });
+    }
+
+    persistAdminCatalog(nextCatalog);
+    setIsAdminModalOpen(false);
+    showToast(
+      adminEditingItemId
+        ? "Aktiviti katalog berjaya dikemas kini."
+        : "Aktiviti katalog berjaya ditambah."
+    );
+  };
+
+  const handleExportCatalog = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const payload: CatalogRawData = {
+      ...activeCatalogData,
+      meta: {
+        ...activeCatalogData.meta,
+        exportedAt: new Date().toISOString(),
+        appVersion: APP_VERSION,
+        guidelineVersion: activeCatalogData.meta?.version,
+      },
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `bta-katalog_${formatDateForFilename(new Date())}.json`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    showToast("Katalog berjaya dieksport.");
+  };
+
+  const handleImportCatalog = async (file: File) => {
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text) as CatalogRawData;
+      if (!parsed || !Array.isArray(parsed.items)) {
+        showToast("Fail tidak sah. Pastikan ada struktur items.");
+        return;
+      }
+      persistAdminCatalog(parsed);
+      showToast("Katalog berjaya diimport dan diaktifkan.");
+    } catch (error) {
+      console.error("Gagal import katalog", error);
+      showToast("Gagal import katalog. Sila semak fail.");
+    }
+  };
+
+  const handleRestoreCatalog = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const confirmed = window.confirm(
+      "Pulihkan katalog asal dan padam semua perubahan pentadbir?"
+    );
+    if (!confirmed) {
+      return;
+    }
+    window.localStorage.removeItem(ADMIN_CATALOG_STORAGE_KEY);
+    setAdminCatalogData(null);
+    showToast("Katalog asal dipulihkan.");
   };
 
   const totals = useMemo(() => {
@@ -551,18 +978,40 @@ export default function HomePage() {
   );
 
   const getCatalogOptionForEntry = (tab: TabKey, entry: Entry) => {
-    const { activityName, optionName } = splitActivityLabel(entry.activity);
+    const { activityName: fallbackActivity, optionName: fallbackOption } =
+      splitActivityLabel(entry.activity);
+    const storedActivityName = entry.activityName ?? fallbackActivity;
+    const storedOptionName = entry.optionName ?? fallbackOption;
+    const directMatch = entry.optionId
+      ? catalogItemById.get(entry.optionId) ?? null
+      : null;
     const subCategoryId = TAB_SUBCATEGORIES[tab];
     const activities = catalogActivitiesBySubCategory[subCategoryId] ?? [];
     const matchedActivity =
-      activities.find((activity) => activity.activityName === activityName) ??
+      activities.find((activity) => activity.activityName === storedActivityName) ??
       null;
     const matchedOption =
       matchedActivity?.options.find(
-        (option) => option.optionName === optionName
+        (option) => option.optionName === storedOptionName
       ) ?? null;
+    const option = directMatch
+      ? {
+          id: directMatch.id,
+          optionCode: directMatch.optionCode,
+          optionName: directMatch.optionName,
+          unitCode: directMatch.unitCode,
+          unitLabel: directMatch.unitLabel,
+          jamPerUnit: directMatch.jamPerUnit,
+          sortOrder: directMatch.sortOrder,
+          constraintsNotesMs: directMatch.constraintsNotesMs,
+          references: directMatch.references,
+        }
+      : matchedOption;
+    const activityName = directMatch?.activityName ?? storedActivityName;
+    const optionName = directMatch?.optionName ?? storedOptionName;
+    const isMissing = !option;
 
-    return { activityName, optionName, option: matchedOption };
+    return { activityName, optionName, option, isMissing };
   };
 
   const getUnitLabelForEntry = (
@@ -607,21 +1056,18 @@ export default function HomePage() {
 
     const entryRows = TABS.flatMap((tab) =>
       entriesByTab[tab].map((entry) => {
-        const { activityName, optionName, option } = getCatalogOptionForEntry(
-          tab,
-          entry
-        );
+        const { activityName, optionName, option, isMissing } =
+          getCatalogOptionForEntry(tab, entry);
         const unitLabel = getUnitLabelForEntry(entry, option);
-        const reference = option?.references?.[0] ?? null;
-        const referenceText = reference
-          ? `${reference.doc} ${reference.section}${
-              reference.page ? ` (ms ${reference.page})` : ""
-            }`
-          : "-";
+        const referenceText = buildReferenceText(option?.references ?? []);
+        const activityText = isMissing
+          ? "Item tidak ditemui dalam katalog"
+          : activityName;
+        const optionText = isMissing ? "-" : optionName || "-";
         return `<tr>
           <td>${escapeHtml(tab)}</td>
-          <td>${escapeHtml(activityName)}</td>
-          <td>${escapeHtml(optionName || "-")}</td>
+          <td>${escapeHtml(activityText)}</td>
+          <td>${escapeHtml(optionText)}</td>
           <td class="text-right">${escapeHtml(
             `${entry.baseQuantity} ${unitLabel}`
           )}</td>
@@ -657,19 +1103,19 @@ export default function HomePage() {
         <body>
           <h1>Laporan BTA UMS</h1>
           <div class="meta">
-            <div><strong>Pathway, Grade/Role:</strong> ${escapeHtml(
+            <div><strong>Laluan, Gred/Jawatan:</strong> ${escapeHtml(
               `${pathway} · ${grade}`
             )}</div>
             <div><strong>Tempoh:</strong> ${escapeHtml(period)}</div>
             <div><strong>Tarikh/Capaian masa:</strong> ${escapeHtml(
               generatedAtText
             )}</div>
-            <div><strong>Total Jam/Minggu:</strong> ${totals.totalHours.toFixed(
+            <div><strong>Jumlah Jam/Minggu:</strong> ${totals.totalHours.toFixed(
               1
             )}</div>
           </div>
 
-          <h2>Target Minimum</h2>
+          <h2>Sasaran Minimum</h2>
           <table>
             <thead>
               <tr>
@@ -681,7 +1127,7 @@ export default function HomePage() {
             <tbody>${targetRows}</tbody>
           </table>
 
-          <h2>Actual vs Target</h2>
+          <h2>Pencapaian vs Sasaran</h2>
           <table>
             <thead>
               <tr>
@@ -741,27 +1187,26 @@ export default function HomePage() {
     const generatedAt = new Date();
     const generatedAtText = generatedAt.toISOString();
     const headers = [
-      "pathway",
-      "gradeRole",
-      "periodMode",
-      "generatedAt",
-      "category",
-      "activity",
-      "option",
-      "quantity",
-      "unitLabel",
-      "rateJamPerUnit",
-      "period",
-      "weeklyHours",
-      "referenceDoc",
-      "referenceSection",
+      "laluan",
+      "gredJawatan",
+      "modTempoh",
+      "dijanaPada",
+      "kategori",
+      "aktiviti",
+      "kategoriAktiviti",
+      "kuantiti",
+      "unit",
+      "kadarJamPerUnit",
+      "tempoh",
+      "jamMinggu",
+      "rujukanDokumen",
+      "rujukanSeksyen",
+      "rujukanMukaSurat",
     ];
     const rows = TABS.flatMap((tab) =>
       entriesByTab[tab].map((entry) => {
-        const { activityName, optionName, option } = getCatalogOptionForEntry(
-          tab,
-          entry
-        );
+        const { activityName, optionName, option, isMissing } =
+          getCatalogOptionForEntry(tab, entry);
         const unitLabel = getUnitLabelForEntry(entry, option);
         const reference = option?.references?.[0] ?? null;
         return [
@@ -770,8 +1215,8 @@ export default function HomePage() {
           period,
           generatedAtText,
           tab,
-          activityName,
-          optionName,
+          isMissing ? "Item tidak ditemui dalam katalog" : activityName,
+          isMissing ? "" : optionName,
           entry.baseQuantity,
           unitLabel,
           entry.jamPerUnit ?? "",
@@ -779,6 +1224,7 @@ export default function HomePage() {
           getEntryWeeklyHours(entry).toFixed(1),
           reference?.doc ?? "",
           reference?.section ?? "",
+          reference?.page ?? "",
         ];
       })
     );
@@ -809,22 +1255,17 @@ export default function HomePage() {
     const generatedAt = new Date();
     const entriesForPdf = TABS.flatMap((tab) =>
       entriesByTab[tab].map((entry) => {
-        const { activityName, optionName, option } = getCatalogOptionForEntry(
-          tab,
-          entry
-        );
+        const { activityName, optionName, option, isMissing } =
+          getCatalogOptionForEntry(tab, entry);
         const unitLabel = getUnitLabelForEntry(entry, option);
-        const reference = option?.references?.[0] ?? null;
-        const referenceText = reference
-          ? `${reference.doc} ${reference.section}${
-              reference.page ? ` (ms ${reference.page})` : ""
-            }`
-          : "-";
+        const referenceText = buildReferenceText(option?.references ?? []);
 
         return {
           category: tab,
-          activity: activityName,
-          activityCategory: optionName || "-",
+          activity: isMissing
+            ? "Item tidak ditemui dalam katalog"
+            : activityName,
+          activityCategory: isMissing ? "-" : optionName || "-",
           quantity: entry.baseQuantity,
           unit: unitLabel,
           rate: entry.jamPerUnit ?? null,
@@ -882,6 +1323,9 @@ export default function HomePage() {
     return {
       id: `${tab}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       activity: `${selectedActivity.activityName} — ${selectedOption.optionName}`,
+      activityName: selectedActivity.activityName,
+      optionName: selectedOption.optionName,
+      optionId: selectedOption.id,
       units: `${quantityValue} ${formatUnitLabel(selectedOption.unitLabel)}`,
       baseQuantity: quantityValue,
       period,
@@ -945,6 +1389,39 @@ export default function HomePage() {
   const selectedOptionNotes = selectedOption?.constraintsNotesMs ?? "";
   const selectedOptionHasInfo =
     selectedOptionReferences.length > 0 || Boolean(selectedOptionNotes);
+  const catalogRowsForActiveTab = useMemo(() => {
+    const subCategoryId = TAB_SUBCATEGORIES[activeTab];
+    return catalogItems
+      .filter((item) => item.subCategoryId === subCategoryId)
+      .sort(
+        (a, b) =>
+          a.sortOrder - b.sortOrder ||
+          a.activityName.localeCompare(b.activityName) ||
+          a.optionName.localeCompare(b.optionName)
+      );
+  }, [activeTab, catalogItems]);
+  const catalogUnitOptionsForActiveTab = useMemo(() => {
+    const units = Array.from(
+      new Set(catalogRowsForActiveTab.map((item) => item.unitLabel))
+    );
+    return units.sort((a, b) => a.localeCompare(b));
+  }, [catalogRowsForActiveTab]);
+  const catalogSearchValue = catalogSearchByTab[activeTab];
+  const catalogUnitFilter = catalogUnitFilterByTab[activeTab];
+  const filteredCatalogRowsForActiveTab = useMemo(() => {
+    const search = catalogSearchValue.trim().toLowerCase();
+    return catalogRowsForActiveTab.filter((item) => {
+      if (catalogUnitFilter && item.unitLabel !== catalogUnitFilter) {
+        return false;
+      }
+      if (!search) {
+        return true;
+      }
+      const referenceText = buildReferenceText(item.references);
+      const haystack = `${item.activityName} ${item.optionName} ${item.unitLabel} ${item.jamPerUnit} ${referenceText}`.toLowerCase();
+      return haystack.includes(search);
+    });
+  }, [catalogRowsForActiveTab, catalogSearchValue, catalogUnitFilter]);
   const quantityValue = Number.parseFloat(draftsByTab[activeTab].quantity);
   const normalizedQuantity = Number.isFinite(quantityValue) ? quantityValue : 0;
   const jamPerUnit = getRate(selectedOption);
@@ -1010,10 +1487,10 @@ export default function HomePage() {
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-3xl font-semibold text-slate-900">
-                BTA UMS Calculator
+                Kalkulator BTA UMS
               </h1>
               <p className="mt-1 text-sm text-slate-600">
-                Pilih laluan dan tambah aktiviti mengikut kategori.
+                Pilih laluan dan tambah rekod mengikut kategori.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -1021,7 +1498,7 @@ export default function HomePage() {
                 className="text-sm font-medium text-slate-600"
                 htmlFor="pathway"
               >
-                Pathway
+                Laluan
               </label>
               <select
                 id="pathway"
@@ -1041,7 +1518,7 @@ export default function HomePage() {
                 className="text-sm font-medium text-slate-600"
                 htmlFor="grade"
               >
-                Grade/Role
+                Gred/Jawatan
               </label>
               <select
                 id="grade"
@@ -1110,6 +1587,20 @@ export default function HomePage() {
               >
                 Tambah contoh
               </button>
+              <label className="flex items-center gap-2 text-sm font-semibold text-slate-600">
+                <input
+                  type="checkbox"
+                  checked={isAdminMode}
+                  onChange={(event) => setIsAdminMode(event.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                />
+                Mod Pentadbir
+              </label>
+              {isAdminCatalogActive ? (
+                <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                  Katalog pentadbir sedang aktif
+                </span>
+              ) : null}
             </div>
           </div>
         </header>
@@ -1122,7 +1613,7 @@ export default function HomePage() {
                   Kategori Aktiviti
                 </h2>
                 <p className="text-sm text-slate-500">
-                  Tambah aktiviti mengikut tab di bawah.
+                  Tambah rekod kiraan mengikut tab di bawah.
                 </p>
               </div>
               <button
@@ -1130,7 +1621,7 @@ export default function HomePage() {
                 onClick={handleResetAll}
                 className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-800"
               >
-                Reset semua
+                Padam semua
               </button>
             </div>
 
@@ -1152,210 +1643,407 @@ export default function HomePage() {
               ))}
             </div>
 
-            <div className="mt-6 rounded-xl border border-slate-200/80 bg-slate-50 p-4">
-              <h3 className="text-base font-semibold text-slate-800">
-                {activeTab}
-              </h3>
-              <div className="mt-4 grid gap-3 lg:grid-cols-[2fr_2fr_1.2fr_1fr_auto]">
-                <select
-                  value={draftsByTab[activeTab].activityCode}
-                  onChange={(event) =>
-                    handleActivityChange(activeTab, event.target.value)
-                  }
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                >
-                  <option value="">Pilih aktiviti</option>
-                  {activitiesForActiveTab.map((activity) => (
-                    <option key={activity.activityCode} value={activity.activityCode}>
-                      {activity.activityName}
-                    </option>
-                  ))}
-                </select>
-                <div className="relative flex items-start gap-2">
-                  <select
-                    value={draftsByTab[activeTab].optionId}
-                    onChange={(event) =>
-                      handleOptionChange(activeTab, event.target.value)
+            <div className="mt-6 space-y-6">
+              <section className="rounded-xl border border-slate-200/80 bg-slate-50 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-800">
+                      Katalog Aktiviti (Rujukan)
+                    </h3>
+                    <p className="text-sm text-slate-500">
+                      Rujukan kadar rasmi sebelum menambah rekod kiraan.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCatalogExpandedByTab((current) => ({
+                        ...current,
+                        [activeTab]: !current[activeTab],
+                      }))
                     }
-                    disabled={!selectedActivity}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100"
                   >
-                    <option value="">Pilih kategori aktiviti</option>
-                    {optionsForSelectedActivity.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.optionName}
-                      </option>
-                    ))}
-                  </select>
-                  {selectedOption && selectedOptionHasInfo ? (
-                    <div
-                      className="relative flex items-start"
-                      onMouseEnter={() =>
-                        setHoveredInfoOptionId(selectedOption.id)
-                      }
-                      onMouseLeave={() => setHoveredInfoOptionId(null)}
-                    >
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setPinnedInfoOptionId((current) =>
-                            current === selectedOption.id
-                              ? null
-                              : selectedOption.id
-                          )
+                    {catalogExpandedByTab[activeTab] ? "Lipat" : "Kembang"}
+                  </button>
+                </div>
+                {catalogExpandedByTab[activeTab] ? (
+                  <div className="mt-4 space-y-4">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <input
+                        type="text"
+                        value={catalogSearchByTab[activeTab]}
+                        onChange={(event) =>
+                          setCatalogSearchByTab((current) => ({
+                            ...current,
+                            [activeTab]: event.target.value,
+                          }))
                         }
-                        className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-500 shadow-sm transition hover:border-blue-300 hover:text-blue-600"
-                        aria-label="Maklumat rujukan"
+                        placeholder="Cari aktiviti, kategori, unit atau rujukan"
+                        className="w-full max-w-sm rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      />
+                      <select
+                        value={catalogUnitFilterByTab[activeTab]}
+                        onChange={(event) =>
+                          setCatalogUnitFilterByTab((current) => ({
+                            ...current,
+                            [activeTab]: event.target.value,
+                          }))
+                        }
+                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                       >
-                        ⓘ
-                      </button>
-                      {activeInfoOptionId === selectedOption.id ? (
-                        <div className="absolute right-0 top-8 z-10 w-72 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600 shadow-lg">
-                          <p className="text-[11px] font-semibold uppercase text-slate-400">
-                            Rujukan
-                          </p>
-                          <ul className="mt-2 space-y-1">
-                            {selectedOptionReferences.map((reference, index) => (
-                              <li key={`${reference.doc}-${index}`}>
-                                Rujukan: {reference.doc} – {reference.section}
-                                {reference.page
-                                  ? ` (ms ${reference.page})`
-                                  : ""}
-                              </li>
-                            ))}
-                          </ul>
-                          {selectedOptionNotes ? (
-                            <p className="mt-3 text-xs text-slate-500">
-                              {selectedOptionNotes}
-                            </p>
-                          ) : null}
+                        <option value="">Semua unit</option>
+                        {catalogUnitOptionsForActiveTab.map((unit) => (
+                          <option key={unit} value={unit}>
+                            {formatUnitLabel(unit)}
+                          </option>
+                        ))}
+                      </select>
+                      {isAdminMode ? (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenAdminAdd(activeTab)}
+                            className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                          >
+                            Tambah Aktiviti
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleExportCatalog}
+                            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+                          >
+                            Eksport Katalog (JSON)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => importCatalogInputRef.current?.click()}
+                            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+                          >
+                            Import Katalog (JSON)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleRestoreCatalog}
+                            className="rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-semibold text-red-600 shadow-sm transition hover:border-red-300 hover:bg-red-50"
+                          >
+                            Pulihkan Katalog Asal
+                          </button>
+                          <input
+                            ref={importCatalogInputRef}
+                            type="file"
+                            accept="application/json"
+                            className="hidden"
+                            onChange={(event) => {
+                              const file = event.target.files?.[0];
+                              if (file) {
+                                handleImportCatalog(file);
+                              }
+                              if (event.target) {
+                                event.target.value = "";
+                              }
+                            }}
+                          />
                         </div>
                       ) : null}
                     </div>
-                  ) : null}
-                </div>
-                <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 shadow-sm">
-                  <p className="text-xs font-semibold uppercase text-slate-400">
-                    Unit
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-700">
-                    {formattedUnitLabel}
-                  </p>
-                  <p className="mt-2 text-xs font-semibold uppercase text-slate-400">
-                    Kadar
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-700">
-                    {rateText}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor={`quantity-${activeTab}`}
-                    className="text-xs font-semibold uppercase text-slate-400"
-                  >
-                    {quantityConfig.label}
-                  </label>
-                  <input
-                    ref={quantityInputRef}
-                    id={`quantity-${activeTab}`}
-                    type="number"
-                    min="0"
-                    step={quantityConfig.step}
-                    placeholder={quantityConfig.label}
-                    value={draftsByTab[activeTab].quantity}
-                    onChange={(event) =>
-                      handleQuantityChange(activeTab, event.target.value)
-                    }
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleAddEntry(activeTab)}
-                  disabled={!selectedOption || !isQuantityValid}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
-                >
-                  Tambah
-                </button>
-              </div>
-              <div className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
-                <p className="text-xs font-semibold uppercase text-slate-400">
-                  Cara kira
-                </p>
-                <p className="mt-1 text-sm font-semibold text-slate-700">
-                  {calculationText}
-                </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  Tempoh: {period}
-                </p>
-              </div>
-              {errorsByTab[activeTab] ? (
-                <p className="mt-2 text-sm text-red-600">
-                  {errorsByTab[activeTab]}
-                </p>
-              ) : null}
+                    {filteredCatalogRowsForActiveTab.length === 0 ? (
+                      <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-6 text-center">
+                        <p className="text-sm text-slate-500">
+                          Tiada rekod katalog sepadan dengan carian ini.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                          <thead className="bg-slate-100 text-slate-500">
+                            <tr>
+                              <th className="px-3 py-2">Aktiviti</th>
+                              <th className="px-3 py-2">Kategori Aktiviti</th>
+                              <th className="px-3 py-2">Unit</th>
+                              <th className="px-3 py-2 text-right">
+                                Kadar (jam/unit)
+                              </th>
+                              <th className="px-3 py-2">Rujukan</th>
+                              {isAdminMode ? (
+                                <th className="px-3 py-2 text-right">Tindakan</th>
+                              ) : null}
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {filteredCatalogRowsForActiveTab.map((item, index) => (
+                              <tr
+                                key={item.id}
+                                className={index % 2 === 0 ? "bg-white" : "bg-slate-50"}
+                              >
+                                <td className="px-3 py-3 text-slate-700">
+                                  {item.activityName}
+                                </td>
+                                <td className="px-3 py-3 text-slate-700">
+                                  {item.optionName}
+                                </td>
+                                <td className="px-3 py-3 text-slate-700">
+                                  {formatUnitLabel(item.unitLabel)}
+                                </td>
+                                <td className="px-3 py-3 text-right text-slate-700">
+                                  {item.jamPerUnit.toFixed(1)}
+                                </td>
+                                <td className="px-3 py-3 text-slate-600">
+                                  {buildReferenceText(item.references)}
+                                </td>
+                                {isAdminMode ? (
+                                  <td className="px-3 py-3 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleOpenAdminEdit(item)}
+                                        className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100"
+                                      >
+                                        Sunting
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleAdminDelete(item)}
+                                        className="rounded-lg border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
+                                      >
+                                        Padam
+                                      </button>
+                                    </div>
+                                  </td>
+                                ) : null}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </section>
 
-              <div className="mt-6">
-                {entriesByTab[activeTab].length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-6 text-center">
-                    <p className="text-sm text-slate-500">
-                      Belum ada aktiviti untuk kategori ini. Tambah aktiviti anda
-                      di atas.
+              <section className="rounded-xl border border-slate-200/80 bg-slate-50 p-4">
+                <h3 className="text-base font-semibold text-slate-800">
+                  Rekod Kiraan
+                </h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  {activeTab}
+                </p>
+                <div className="mt-4 grid gap-3 lg:grid-cols-[2fr_2fr_1.2fr_1fr_auto]">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold uppercase text-slate-400">
+                      Aktiviti
+                    </label>
+                    <input
+                      list={`activity-list-${activeTab}`}
+                      value={draftsByTab[activeTab].activityQuery}
+                      onChange={(event) =>
+                        handleActivityChange(activeTab, event.target.value)
+                      }
+                      placeholder="Cari aktiviti"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    />
+                    <datalist id={`activity-list-${activeTab}`}>
+                      {activitiesForActiveTab.map((activity) => (
+                        <option key={activity.activityCode} value={activity.activityName} />
+                      ))}
+                    </datalist>
+                  </div>
+                  <div className="relative flex items-start gap-2">
+                    <div className="flex w-full flex-col gap-1">
+                      <label className="text-xs font-semibold uppercase text-slate-400">
+                        Kategori Aktiviti
+                      </label>
+                      <input
+                        list={`option-list-${activeTab}`}
+                        value={draftsByTab[activeTab].optionQuery}
+                        onChange={(event) =>
+                          handleOptionChange(activeTab, event.target.value)
+                        }
+                        disabled={!selectedActivity}
+                        placeholder="Cari kategori aktiviti"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+                      />
+                      <datalist id={`option-list-${activeTab}`}>
+                        {optionsForSelectedActivity.map((option) => (
+                          <option key={option.id} value={option.optionName} />
+                        ))}
+                      </datalist>
+                    </div>
+                    {selectedOption && selectedOptionHasInfo ? (
+                      <div
+                        className="relative flex items-start"
+                        onMouseEnter={() =>
+                          setHoveredInfoOptionId(selectedOption.id)
+                        }
+                        onMouseLeave={() => setHoveredInfoOptionId(null)}
+                      >
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPinnedInfoOptionId((current) =>
+                              current === selectedOption.id
+                                ? null
+                                : selectedOption.id
+                            )
+                          }
+                          className="mt-6 inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-500 shadow-sm transition hover:border-blue-300 hover:text-blue-600"
+                          aria-label="Maklumat rujukan"
+                        >
+                          ⓘ
+                        </button>
+                        {activeInfoOptionId === selectedOption.id ? (
+                          <div className="absolute right-0 top-10 z-10 w-72 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600 shadow-lg">
+                            <p className="text-[11px] font-semibold uppercase text-slate-400">
+                              Rujukan
+                            </p>
+                            <ul className="mt-2 space-y-1">
+                              {selectedOptionReferences.map((reference, index) => (
+                                <li key={`${reference.doc}-${index}`}>
+                                  Rujukan: {reference.doc} – {reference.section}
+                                  {reference.page ? ` (ms ${reference.page})` : ""}
+                                </li>
+                              ))}
+                            </ul>
+                            {selectedOptionNotes ? (
+                              <p className="mt-3 text-xs text-slate-500">
+                                {selectedOptionNotes}
+                              </p>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 shadow-sm">
+                    <p className="text-xs font-semibold uppercase text-slate-400">
+                      Unit
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-slate-700">
+                      {formattedUnitLabel}
+                    </p>
+                    <p className="mt-2 text-xs font-semibold uppercase text-slate-400">
+                      Kadar
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-slate-700">
+                      {rateText}
                     </p>
                   </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                      <thead className="bg-slate-100 text-slate-500">
-                        <tr>
-                          <th className="px-3 py-2">Aktiviti</th>
-                          <th className="px-3 py-2">Unit</th>
-                          <th className="px-3 py-2 text-right">
-                            Jam/minggu (dikira)
-                          </th>
-                          <th className="px-3 py-2 text-right">Tindakan</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {entriesByTab[activeTab].map((entry, index) => (
-                          <tr
-                            key={entry.id}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-slate-50"
-                            }
-                          >
-                            <td className="px-3 py-3 text-slate-700">
-                              {entry.activity}
-                            </td>
-                            <td className="px-3 py-3 text-slate-700">
-                              <div>{entry.units}</div>
-                              <div className="text-xs text-slate-400">
-                                Tempoh: {entry.period}
-                              </div>
-                            </td>
-                            <td className="px-3 py-3 text-right text-slate-700">
-                              {getEntryWeeklyHours(entry).toFixed(1)}
-                            </td>
-                            <td className="px-3 py-3 text-right">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleRemoveEntry(activeTab, entry.id)
-                                }
-                                className="rounded-lg border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
-                              >
-                                Padam
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="flex flex-col gap-1">
+                    <label
+                      htmlFor={`quantity-${activeTab}`}
+                      className="text-xs font-semibold uppercase text-slate-400"
+                    >
+                      {quantityConfig.label}
+                    </label>
+                    <input
+                      ref={quantityInputRef}
+                      id={`quantity-${activeTab}`}
+                      type="number"
+                      min="0"
+                      step={quantityConfig.step}
+                      placeholder={quantityConfig.label}
+                      value={draftsByTab[activeTab].quantity}
+                      onChange={(event) =>
+                        handleQuantityChange(activeTab, event.target.value)
+                      }
+                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    />
                   </div>
-                )}
-              </div>
+                  <button
+                    type="button"
+                    onClick={() => handleAddEntry(activeTab)}
+                    disabled={!selectedOption || !isQuantityValid}
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+                  >
+                    Tambah
+                  </button>
+                </div>
+                <div className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
+                  <p className="text-xs font-semibold uppercase text-slate-400">
+                    Cara kira
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-slate-700">
+                    {calculationText}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Tempoh: {period}
+                  </p>
+                </div>
+                {errorsByTab[activeTab] ? (
+                  <p className="mt-2 text-sm text-red-600">
+                    {errorsByTab[activeTab]}
+                  </p>
+                ) : null}
+
+                <div className="mt-6">
+                  {entriesByTab[activeTab].length === 0 ? (
+                    <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-6 text-center">
+                      <p className="text-sm text-slate-500">
+                        Belum ada rekod untuk kategori ini. Tambah rekod kiraan
+                        anda di atas.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-sm">
+                        <thead className="bg-slate-100 text-slate-500">
+                          <tr>
+                            <th className="px-3 py-2">Aktiviti</th>
+                            <th className="px-3 py-2">Unit</th>
+                            <th className="px-3 py-2 text-right">
+                              Jam/minggu (dikira)
+                            </th>
+                            <th className="px-3 py-2 text-right">Tindakan</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {entriesByTab[activeTab].map((entry, index) => {
+                            const catalogInfo = getCatalogOptionForEntry(
+                              activeTab,
+                              entry
+                            );
+                            const activityLabel = catalogInfo.isMissing
+                              ? "Item tidak ditemui dalam katalog"
+                              : entry.activity;
+                            return (
+                              <tr
+                                key={entry.id}
+                                className={
+                                  index % 2 === 0 ? "bg-white" : "bg-slate-50"
+                                }
+                              >
+                                <td className="px-3 py-3 text-slate-700">
+                                  {activityLabel}
+                                </td>
+                                <td className="px-3 py-3 text-slate-700">
+                                  <div>{entry.units}</div>
+                                  <div className="text-xs text-slate-400">
+                                    Tempoh: {entry.period}
+                                  </div>
+                                </td>
+                                <td className="px-3 py-3 text-right text-slate-700">
+                                  {getEntryWeeklyHours(entry).toFixed(1)}
+                                </td>
+                                <td className="px-3 py-3 text-right">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleRemoveEntry(activeTab, entry.id)
+                                    }
+                                    className="rounded-lg border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50"
+                                  >
+                                    Padam
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </section>
             </div>
           </div>
 
@@ -1411,7 +2099,7 @@ export default function HomePage() {
 
             <div className="mt-6 rounded-xl border border-slate-200/80 bg-slate-50 p-4">
               <p className="text-xs font-semibold uppercase text-slate-500">
-                Total jam
+                Jumlah jam
               </p>
               <p className="mt-2 text-3xl font-semibold text-slate-900">
                 {totals.totalHours.toFixed(1)}
@@ -1435,7 +2123,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold uppercase text-slate-500">
-                    Target minimum
+                    Sasaran minimum
                   </p>
                   <p className="mt-1 text-sm text-slate-600">
                     {pathway} · {grade}
@@ -1462,7 +2150,7 @@ export default function HomePage() {
                 ))}
               </div>
               <p className="mt-4 text-xs text-slate-500">
-                Target berdasarkan Garis Panduan BTA UMS (40 jam/minggu).
+                Sasaran berdasarkan Garis Panduan BTA UMS (40 jam/minggu).
               </p>
             </div>
 
@@ -1560,8 +2248,236 @@ export default function HomePage() {
           </aside>
         </section>
 
+        {isAdminModalOpen ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 py-6">
+            <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-900">
+                  {adminEditingItemId ? "Sunting Aktiviti Katalog" : "Tambah Aktiviti Katalog"}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsAdminModalOpen(false)}
+                  className="text-sm font-semibold text-slate-500 hover:text-slate-700"
+                >
+                  Batal
+                </button>
+              </div>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <label className="text-xs font-semibold uppercase text-slate-400">
+                    Tab/Kategori
+                  </label>
+                  <select
+                    value={adminFormState.subCategoryId}
+                    onChange={(event) =>
+                      setAdminFormState((current) => ({
+                        ...current,
+                        subCategoryId: event.target.value,
+                      }))
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  >
+                    {TABS.map((tab) => (
+                      <option key={tab} value={TAB_SUBCATEGORIES[tab]}>
+                        {tab}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-xs font-semibold uppercase text-slate-400">
+                    Aktiviti
+                  </label>
+                  <input
+                    type="text"
+                    value={adminFormState.activityName}
+                    onChange={(event) =>
+                      setAdminFormState((current) => ({
+                        ...current,
+                        activityName: event.target.value,
+                      }))
+                    }
+                    placeholder="Nama aktiviti"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-xs font-semibold uppercase text-slate-400">
+                    Kategori Aktiviti
+                  </label>
+                  <input
+                    type="text"
+                    value={adminFormState.optionName}
+                    onChange={(event) =>
+                      setAdminFormState((current) => ({
+                        ...current,
+                        optionName: event.target.value,
+                      }))
+                    }
+                    placeholder="Nama kategori aktiviti"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase text-slate-400">
+                    Unit
+                  </label>
+                  <select
+                    value={adminFormState.unitCode}
+                    onChange={(event) => {
+                      const selected = UNIT_OPTIONS.find(
+                        (unit) => unit.code === event.target.value
+                      );
+                      setAdminFormState((current) => ({
+                        ...current,
+                        unitCode: event.target.value,
+                        unitLabel: selected?.label ?? current.unitLabel,
+                      }));
+                    }}
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  >
+                    {!UNIT_OPTIONS.some(
+                      (unit) => unit.code === adminFormState.unitCode
+                    ) ? (
+                      <option value={adminFormState.unitCode}>
+                        {adminFormState.unitLabel}
+                      </option>
+                    ) : null}
+                    {UNIT_OPTIONS.map((unit) => (
+                      <option key={unit.code} value={unit.code}>
+                        {unit.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase text-slate-400">
+                    Kadar (jam per unit)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={adminFormState.jamPerUnit}
+                    onChange={(event) =>
+                      setAdminFormState((current) => ({
+                        ...current,
+                        jamPerUnit: event.target.value,
+                      }))
+                    }
+                    placeholder="Contoh: 1.5"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-xs font-semibold uppercase text-slate-400">
+                    Tag (pilihan)
+                  </label>
+                  <input
+                    type="text"
+                    value={adminFormState.tags}
+                    onChange={(event) =>
+                      setAdminFormState((current) => ({
+                        ...current,
+                        tags: event.target.value,
+                      }))
+                    }
+                    placeholder="Contoh: pengajaran, kelas"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-xs font-semibold uppercase text-slate-400">
+                    Nota (pilihan)
+                  </label>
+                  <textarea
+                    value={adminFormState.notes}
+                    onChange={(event) =>
+                      setAdminFormState((current) => ({
+                        ...current,
+                        notes: event.target.value,
+                      }))
+                    }
+                    placeholder="Catatan tambahan untuk pentadbir"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase text-slate-400">
+                    Dokumen rujukan
+                  </label>
+                  <input
+                    type="text"
+                    value={adminFormState.referenceDoc}
+                    onChange={(event) =>
+                      setAdminFormState((current) => ({
+                        ...current,
+                        referenceDoc: event.target.value,
+                      }))
+                    }
+                    placeholder="Contoh: Garis Panduan"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase text-slate-400">
+                    Seksyen rujukan
+                  </label>
+                  <input
+                    type="text"
+                    value={adminFormState.referenceSection}
+                    onChange={(event) =>
+                      setAdminFormState((current) => ({
+                        ...current,
+                        referenceSection: event.target.value,
+                      }))
+                    }
+                    placeholder="Contoh: 1.2 Pengajaran"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-xs font-semibold uppercase text-slate-400">
+                    Muka surat (pilihan)
+                  </label>
+                  <input
+                    type="text"
+                    value={adminFormState.referencePage}
+                    onChange={(event) =>
+                      setAdminFormState((current) => ({
+                        ...current,
+                        referencePage: event.target.value,
+                      }))
+                    }
+                    placeholder="Contoh: 12"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
+              </div>
+              <div className="mt-6 flex flex-wrap justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAdminModalOpen(false)}
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAdminSave}
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                >
+                  Simpan
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         <footer className="text-center text-xs text-slate-400">
-          MVP • GitHub Pages
+          MVP • Halaman GitHub
         </footer>
       </div>
     </main>
