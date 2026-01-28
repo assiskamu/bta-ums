@@ -17,6 +17,14 @@ type CatalogRawItem = {
     labelMs: string;
   };
   jamPerUnit: number;
+  constraints?: {
+    notesMs?: string;
+  };
+  references?: {
+    doc: string;
+    section: string;
+    page?: string;
+  }[];
 };
 
 type CatalogRawData = {
@@ -33,6 +41,12 @@ export type CatalogItem = {
   unitLabel: string;
   jamPerUnit: number;
   sortOrder: number;
+  constraintsNotesMs?: string;
+  references: {
+    doc: string;
+    section: string;
+    page?: string;
+  }[];
 };
 
 export type CatalogActivityOption = {
@@ -42,6 +56,12 @@ export type CatalogActivityOption = {
   unitLabel: string;
   jamPerUnit: number;
   sortOrder: number;
+  constraintsNotesMs?: string;
+  references: {
+    doc: string;
+    section: string;
+    page?: string;
+  }[];
 };
 
 export type CatalogActivity = {
@@ -64,6 +84,8 @@ const normalizeCatalogItems = (data: CatalogRawData): CatalogItem[] =>
       unitLabel: item.unit.labelMs,
       jamPerUnit: item.jamPerUnit,
       sortOrder: item.sortOrder ?? 0,
+      constraintsNotesMs: item.constraints?.notesMs,
+      references: item.references ?? [],
     }));
 
 const normalizedCatalogItems = normalizeCatalogItems(
@@ -99,6 +121,8 @@ const catalogActivitiesBySubCategory = normalizedCatalogItems.reduce<
     unitLabel: item.unitLabel,
     jamPerUnit: item.jamPerUnit,
     sortOrder: item.sortOrder,
+    constraintsNotesMs: item.constraintsNotesMs,
+    references: item.references,
   });
 
   activity.sortOrder = Math.min(activity.sortOrder, item.sortOrder);

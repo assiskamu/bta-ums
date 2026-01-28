@@ -144,6 +144,12 @@ export default function HomePage() {
   const [entriesByTab, setEntriesByTab] = useState(createEmptyEntries);
   const [draftsByTab, setDraftsByTab] = useState(createEmptyDrafts);
   const [errorsByTab, setErrorsByTab] = useState(createEmptyErrors);
+  const [hoveredInfoOptionId, setHoveredInfoOptionId] = useState<string | null>(
+    null
+  );
+  const [pinnedInfoOptionId, setPinnedInfoOptionId] = useState<string | null>(
+    null
+  );
   const quantityInputRef = useRef<HTMLInputElement>(null);
 
   const catalogActivitiesBySubCategory = useMemo(
@@ -384,6 +390,10 @@ export default function HomePage() {
   const selectedOption = optionsForSelectedActivity.find(
     (option) => option.id === draftsByTab[activeTab].optionId
   );
+  const selectedOptionReferences = selectedOption?.references ?? [];
+  const selectedOptionNotes = selectedOption?.constraintsNotesMs ?? "";
+  const selectedOptionHasInfo =
+    selectedOptionReferences.length > 0 || Boolean(selectedOptionNotes);
   const quantityValue = Number.parseFloat(draftsByTab[activeTab].quantity);
   const normalizedQuantity = Number.isFinite(quantityValue) ? quantityValue : 0;
   const jamPerUnit = selectedOption?.jamPerUnit ?? 0;
@@ -407,9 +417,15 @@ export default function HomePage() {
     }
   }, [activeTab, selectedOption]);
 
+  useEffect(() => {
+    setPinnedInfoOptionId(null);
+    setHoveredInfoOptionId(null);
+  }, [activeTab, selectedOption?.id]);
+
   const progressPercentage = Math.min((totals.totalHours / 40) * 100, 100);
   const statusLabel = totals.totalHours >= 40 ? "Cukup" : "Kurang";
   const progressText = `${totals.totalHours.toFixed(1)} / 40 jam`;
+  const activeInfoOptionId = hoveredInfoOptionId ?? pinnedInfoOptionId;
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -524,21 +540,69 @@ export default function HomePage() {
                     </option>
                   ))}
                 </select>
-                <select
-                  value={draftsByTab[activeTab].optionId}
-                  onChange={(event) =>
-                    handleOptionChange(activeTab, event.target.value)
-                  }
-                  disabled={!selectedActivity}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
-                >
-                  <option value="">Pilih kategori aktiviti</option>
-                  {optionsForSelectedActivity.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.optionName}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative flex items-start gap-2">
+                  <select
+                    value={draftsByTab[activeTab].optionId}
+                    onChange={(event) =>
+                      handleOptionChange(activeTab, event.target.value)
+                    }
+                    disabled={!selectedActivity}
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+                  >
+                    <option value="">Pilih kategori aktiviti</option>
+                    {optionsForSelectedActivity.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.optionName}
+                      </option>
+                    ))}
+                  </select>
+                  {selectedOption && selectedOptionHasInfo ? (
+                    <div
+                      className="relative flex items-start"
+                      onMouseEnter={() =>
+                        setHoveredInfoOptionId(selectedOption.id)
+                      }
+                      onMouseLeave={() => setHoveredInfoOptionId(null)}
+                    >
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPinnedInfoOptionId((current) =>
+                            current === selectedOption.id
+                              ? null
+                              : selectedOption.id
+                          )
+                        }
+                        className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-500 shadow-sm transition hover:border-blue-300 hover:text-blue-600"
+                        aria-label="Maklumat rujukan"
+                      >
+                        ⓘ
+                      </button>
+                      {activeInfoOptionId === selectedOption.id ? (
+                        <div className="absolute right-0 top-8 z-10 w-72 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600 shadow-lg">
+                          <p className="text-[11px] font-semibold uppercase text-slate-400">
+                            Rujukan
+                          </p>
+                          <ul className="mt-2 space-y-1">
+                            {selectedOptionReferences.map((reference, index) => (
+                              <li key={`${reference.doc}-${index}`}>
+                                Rujukan: {reference.doc} – {reference.section}
+                                {reference.page
+                                  ? ` (ms ${reference.page})`
+                                  : ""}
+                              </li>
+                            ))}
+                          </ul>
+                          {selectedOptionNotes ? (
+                            <p className="mt-3 text-xs text-slate-500">
+                              {selectedOptionNotes}
+                            </p>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
                 <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 shadow-sm">
                   <p className="text-xs font-semibold uppercase text-slate-400">
                     Unit
