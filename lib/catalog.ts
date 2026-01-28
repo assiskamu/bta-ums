@@ -1,6 +1,6 @@
 import catalogData from "../data/bta.catalog.v1.json";
 
-type CatalogRawItem = {
+export type CatalogRawItem = {
   id: string;
   status?: string;
   sortOrder?: number;
@@ -26,6 +26,7 @@ type CatalogRawItem = {
     section: string;
     page?: string;
   }[];
+  tags?: string[];
 };
 
 export type CatalogMeta = {
@@ -36,9 +37,14 @@ export type CatalogMeta = {
   notes?: string;
 };
 
-type CatalogRawData = {
-  meta?: CatalogMeta;
+export type CatalogRawData = {
+  meta?: CatalogMeta & {
+    exportedAt?: string;
+    appVersion?: string;
+    guidelineVersion?: string;
+  };
   items: CatalogRawItem[];
+  categories?: unknown;
 };
 
 export type CatalogItem = {
@@ -58,6 +64,7 @@ export type CatalogItem = {
     section: string;
     page?: string;
   }[];
+  tags?: string[];
 };
 
 export type CatalogActivityOption = {
@@ -83,7 +90,7 @@ export type CatalogActivity = {
   options: CatalogActivityOption[];
 };
 
-const normalizeCatalogItems = (data: CatalogRawData): CatalogItem[] =>
+export const normalizeCatalogItems = (data: CatalogRawData): CatalogItem[] =>
   data.items
     .filter((item) => item.status !== "deprecated")
     .map((item) => ({
@@ -99,68 +106,80 @@ const normalizeCatalogItems = (data: CatalogRawData): CatalogItem[] =>
       sortOrder: item.sortOrder ?? 0,
       constraintsNotesMs: item.constraints?.notesMs,
       references: item.references ?? [],
+      tags: item.tags ?? [],
     }));
 
-const normalizedCatalogItems = normalizeCatalogItems(
-  catalogData as CatalogRawData
-);
+export const BASE_CATALOG_DATA = catalogData as CatalogRawData;
 
-const catalogMeta = (catalogData as CatalogRawData).meta ?? null;
+const normalizedCatalogItems = normalizeCatalogItems(BASE_CATALOG_DATA);
 
-const catalogActivitiesBySubCategory = normalizedCatalogItems.reduce<
-  Record<string, CatalogActivity[]>
->((accumulator, item) => {
-  if (!accumulator[item.subCategoryId]) {
-    accumulator[item.subCategoryId] = [];
-  }
+const catalogMeta = BASE_CATALOG_DATA.meta ?? null;
 
-  const activities = accumulator[item.subCategoryId];
-  let activity = activities.find(
-    (candidate) => candidate.activityCode === item.activityCode
-  );
+export const buildCatalogActivitiesBySubCategory = (items: CatalogItem[]) => {
+  const catalogActivitiesBySubCategory = items.reduce<
+    Record<string, CatalogActivity[]>
+  >((accumulator, item) => {
+    if (!accumulator[item.subCategoryId]) {
+      accumulator[item.subCategoryId] = [];
+    }
 
-  if (!activity) {
-    activity = {
-      activityCode: item.activityCode,
-      activityName: item.activityName,
+    const activities = accumulator[item.subCategoryId];
+    let activity = activities.find(
+      (candidate) => candidate.activityCode === item.activityCode
+    );
+
+    if (!activity) {
+      activity = {
+        activityCode: item.activityCode,
+        activityName: item.activityName,
+        sortOrder: item.sortOrder,
+        options: [],
+      };
+      activities.push(activity);
+    }
+
+    activity.options.push({
+      id: item.id,
+      optionCode: item.optionCode,
+      optionName: item.optionName,
+      unitCode: item.unitCode,
+      unitLabel: item.unitLabel,
+      jamPerUnit: item.jamPerUnit,
       sortOrder: item.sortOrder,
-      options: [],
-    };
-    activities.push(activity);
-  }
+      constraintsNotesMs: item.constraintsNotesMs,
+      references: item.references,
+    });
 
-  activity.options.push({
-    id: item.id,
-    optionCode: item.optionCode,
-    optionName: item.optionName,
-    unitCode: item.unitCode,
-    unitLabel: item.unitLabel,
-    jamPerUnit: item.jamPerUnit,
-    sortOrder: item.sortOrder,
-    constraintsNotesMs: item.constraintsNotesMs,
-    references: item.references,
-  });
+    activity.sortOrder = Math.min(activity.sortOrder, item.sortOrder);
 
-  activity.sortOrder = Math.min(activity.sortOrder, item.sortOrder);
+    return accumulator;
+  }, {});
 
-  return accumulator;
-}, {});
-
-Object.values(catalogActivitiesBySubCategory).forEach((activities) => {
-  activities.sort(
-    (a, b) =>
-      a.sortOrder - b.sortOrder || a.activityName.localeCompare(b.activityName)
-  );
-  activities.forEach((activity) => {
-    activity.options.sort(
+  Object.values(catalogActivitiesBySubCategory).forEach((activities) => {
+    activities.sort(
       (a, b) =>
         a.sortOrder - b.sortOrder ||
-        a.optionName.localeCompare(b.optionName)
+        a.activityName.localeCompare(b.activityName)
     );
+    activities.forEach((activity) => {
+      activity.options.sort(
+        (a, b) =>
+          a.sortOrder - b.sortOrder ||
+          a.optionName.localeCompare(b.optionName)
+      );
+    });
   });
-});
+
+  return catalogActivitiesBySubCategory;
+};
+
+const catalogActivitiesBySubCategory = buildCatalogActivitiesBySubCategory(
+  normalizedCatalogItems
+);
 
 export const getCatalogActivitiesBySubCategory = () =>
   catalogActivitiesBySubCategory;
 
 export const getCatalogMeta = () => catalogMeta;
+
+export const getCatalogItems = () => normalizedCatalogItems;

@@ -78,7 +78,7 @@ export const exportBtaPdf = async (
   doc.text("Laporan BTA UMS", marginX, cursorY);
   cursorY += 7;
 
-  const subtitle = `Pathway: ${pathway} | Grade/Role: ${gradeRole} | Tempoh: ${periodMode}`;
+  const subtitle = `Laluan: ${pathway} | Gred/Jawatan: ${gradeRole} | Tempoh: ${periodMode}`;
   doc.setFontSize(10);
   const subtitleLines = doc.splitTextToSize(
     subtitle,
@@ -97,7 +97,7 @@ export const exportBtaPdf = async (
 
   doc.setFontSize(16);
   doc.text(
-    `Total Jam/Minggu: ${totals.totalWeeklyHours.toFixed(1)} / 40`,
+    `Jumlah Jam/Minggu: ${totals.totalWeeklyHours.toFixed(1)} / 40`,
     marginX,
     cursorY
   );
@@ -105,7 +105,7 @@ export const exportBtaPdf = async (
 
   doc.setFontSize(9);
   doc.setTextColor(100);
-  doc.text(`Guideline: ${guidelineVersion ?? "-"}`, marginX, cursorY);
+  doc.text(`Garis Panduan: ${guidelineVersion ?? "-"}`, marginX, cursorY);
   doc.setTextColor(0);
   cursorY += 4;
 
@@ -132,9 +132,9 @@ export const exportBtaPdf = async (
     head: [
       [
         "Kategori",
-        "Actual (jam/minggu)",
-        "Target minimum (jam)",
-        "Target (%)",
+        "Pencapaian (jam/minggu)",
+        "Sasaran minimum (jam)",
+        "Peratus sasaran",
         "Status",
       ],
     ],
