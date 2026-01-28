@@ -102,16 +102,17 @@ type StoredState = {
 };
 
 const STORAGE_KEY = "bta-ums-v1";
-const DEMO_OPTION_PREFERENCES: Partial<Record<TabKey, string[]>> = {
-  Pengajaran: ["BTA_TEACH_LECTURE_CLASS_SIZE_LT_50"],
-  Penyeliaan: ["BTA_SUP_TEACHING_PRACTICUM_DEFAULT"],
-  Penyelidikan: ["BTA_RES_GRANT_INTERNATIONAL_ROLE_LEAD"],
-  Penerbitan: ["BTA_PUB_JOURNAL_INDEX_SCOPUS_WOS_ERA"],
-  Pentadbiran: [
-    "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_VICE_CHANCELLOR",
-  ],
-  Perkhidmatan: ["BTA_SVC_UNI_COMMUNITY_ALL_LEVELS_ROLES"],
-};
+const DEMO_SUBCATEGORY_IDS = [
+  "SUB_TEACH",
+  "SUB_SUP",
+  "SUB_RES",
+  "SUB_PUB",
+  "SUB_ADMIN",
+  "SUB_SVC",
+  "SUB_CONF",
+] as const;
+
+type DemoSubCategoryId = (typeof DEMO_SUBCATEGORY_IDS)[number];
 
 const createEmptyEntries = () =>
   TABS.reduce<Record<TabKey, Entry[]>>((accumulator, tab) => {
@@ -500,39 +501,17 @@ export default function HomePage() {
     [pathway, grade]
   );
 
-  const buildDemoEntry = (tab: TabKey) => {
-    const subCategoryId = TAB_SUBCATEGORIES[tab];
+  const buildDemoEntry = (subCategoryId: DemoSubCategoryId, tab: TabKey) => {
     const activities = catalogActivitiesBySubCategory[subCategoryId] ?? [];
-    if (activities.length === 0) {
-      return null;
-    }
-
-    const shouldUsePreferences = Boolean(targetByTab[tab]);
-    const preferredOptionIds = shouldUsePreferences
-      ? (DEMO_OPTION_PREFERENCES[tab] ?? [])
-      : [];
-    let selectedActivity: CatalogActivity | null = activities[0] ?? null;
-    let selectedOption: CatalogActivityOption | null =
-      activities[0]?.options[0] ?? null;
-
-    for (const optionId of preferredOptionIds) {
-      const activityMatch = activities.find((activity) =>
-        activity.options.some((option) => option.id === optionId)
-      );
-      if (activityMatch) {
-        selectedActivity = activityMatch;
-        const foundOption =
-          activityMatch.options.find((option) => option.id === optionId) ?? null;
-        selectedOption = foundOption;
-        break;
-      }
-    }
+    const selectedActivity: CatalogActivity | null = activities[0] ?? null;
+    const selectedOption: CatalogActivityOption | null =
+      selectedActivity?.options[0] ?? null;
 
     if (!selectedActivity || !selectedOption) {
       return null;
     }
 
-    const quantityValue = 1;
+    const quantityValue = selectedOption.unitCode === "hour" ? 2 : 1;
     const totalWeeklyHours = calculateWeeklyHours({
       quantity: quantityValue,
       jamPerUnit: getRate(selectedOption),
@@ -552,24 +531,27 @@ export default function HomePage() {
   };
 
   const handleAddDemoEntries = () => {
-    const demoTabs: TabKey[] = [
-      "Pengajaran",
-      "Penyeliaan",
-      "Penyelidikan",
-      "Penerbitan",
-      "Pentadbiran",
-      "Perkhidmatan",
-    ];
+    const subCategoryTabs = DEMO_SUBCATEGORY_IDS.map((subCategoryId) => ({
+      subCategoryId,
+      tab:
+        TABS.find((tabKey) => TAB_SUBCATEGORIES[tabKey] === subCategoryId) ??
+        null,
+    })).filter(
+      (
+        entry
+      ): entry is { subCategoryId: DemoSubCategoryId; tab: TabKey } =>
+        entry.tab !== null
+    );
 
     const orderedTabs = [
-      ...demoTabs.filter((tab) => targetByTab[tab]),
-      ...demoTabs.filter((tab) => !targetByTab[tab]),
+      ...subCategoryTabs.filter(({ tab }) => targetByTab[tab]),
+      ...subCategoryTabs.filter(({ tab }) => !targetByTab[tab]),
     ];
 
     setEntriesByTab((current) => {
       const next = { ...current };
-      orderedTabs.forEach((tab) => {
-        const demoEntry = buildDemoEntry(tab);
+      orderedTabs.forEach(({ subCategoryId, tab }) => {
+        const demoEntry = buildDemoEntry(subCategoryId, tab);
         if (demoEntry) {
           next[tab] = [...next[tab], demoEntry];
         }
@@ -578,7 +560,7 @@ export default function HomePage() {
     });
     setErrorsByTab((current) => {
       const next = { ...current };
-      orderedTabs.forEach((tab) => {
+      orderedTabs.forEach(({ tab }) => {
         next[tab] = "";
       });
       return next;
