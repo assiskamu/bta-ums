@@ -1,4 +1,5 @@
 import catalogData from "../data/bta.catalog.v1.json";
+import { normalizeTitleCase } from "./text";
 
 export type CatalogRawItem = {
   id: string;
@@ -97,9 +98,9 @@ export const normalizeCatalogItems = (data: CatalogRawData): CatalogItem[] =>
       id: item.id,
       subCategoryId: item.subCategoryId,
       activityCode: item.activity.code,
-      activityName: item.activity.nameMs,
+      activityName: normalizeTitleCase(item.activity.nameMs),
       optionCode: item.option.code,
-      optionName: item.option.nameMs,
+      optionName: normalizeTitleCase(item.option.nameMs),
       unitCode: item.unit.code,
       unitLabel: item.unit.labelMs,
       jamPerUnit: item.jamPerUnit,

@@ -1,4 +1,13 @@
-import type { UserOptions } from "jspdf-autotable";
+type AutoTableOptions = {
+  head: (string | number)[][];
+  body: (string | number)[][];
+  startY?: number;
+  theme?: string;
+  margin?: { left?: number; right?: number };
+  styles?: { fontSize?: number; cellPadding?: number; overflow?: string };
+  headStyles?: { fillColor?: number[]; textColor?: number | number[] };
+  columnStyles?: Record<number, { cellWidth?: number; halign?: string }>;
+};
 
 export type ExportBtaPdfParams = {
   pathway: string;
@@ -51,8 +60,40 @@ export const exportBtaPdf = async (
     return;
   }
 
-  const { jsPDF } = await import("jspdf");
-  const { default: autoTable } = await import("jspdf-autotable");
+  const loadScript = (src: string) =>
+    new Promise<void>((resolve, reject) => {
+      const existing = document.querySelector(`script[data-src="${src}"]`);
+      if (existing) {
+        resolve();
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      script.dataset.src = src;
+      script.onload = () => resolve();
+      script.onerror = () =>
+        reject(new Error("Gagal memuatkan skrip PDF."));
+      document.head.appendChild(script);
+    });
+
+  await loadScript(
+    "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
+  );
+  await loadScript(
+    "https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.js"
+  );
+
+  const jsPDF = (window as { jspdf?: { jsPDF?: unknown } }).jspdf?.jsPDF;
+  const autoTable =
+    (window as {
+      jspdf?: { autoTable?: (doc: unknown, options: AutoTableOptions) => void };
+    }).jspdf?.autoTable;
+
+  if (!jsPDF || !autoTable) {
+    alert("Modul PDF tidak dapat dimuatkan. Sila cuba semula.");
+    return;
+  }
 
   const {
     pathway,
@@ -66,7 +107,27 @@ export const exportBtaPdf = async (
     guidelineVersion,
   } = params;
 
-  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const doc = new (jsPDF as {
+    new (config: {
+      orientation: string;
+      unit: string;
+      format: string;
+    }): {
+      internal: { pageSize: { getWidth: () => number; getHeight: () => number } };
+      setFontSize: (size: number) => void;
+      text: (
+        text: string | string[],
+        x: number,
+        y: number,
+        options?: { align?: string }
+      ) => void;
+      splitTextToSize: (text: string, size: number) => string[];
+      setTextColor: (r: number, g?: number, b?: number) => void;
+      getNumberOfPages: () => number;
+      setPage: (page: number) => void;
+      save: (fileName: string) => void;
+    };
+  })({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const marginX = 16;
@@ -149,7 +210,7 @@ export const exportBtaPdf = async (
       3: { halign: "right" },
       4: { halign: "center" },
     },
-  } satisfies UserOptions);
+  } satisfies AutoTableOptions);
 
   const afterSummaryY = (doc as typeof doc & { lastAutoTable?: { finalY: number } })
     .lastAutoTable?.finalY;
@@ -195,7 +256,7 @@ export const exportBtaPdf = async (
       5: { halign: "right" },
       7: { halign: "right" },
     },
-  } satisfies UserOptions);
+  } satisfies AutoTableOptions);
 
   const totalPages = doc.getNumberOfPages();
   doc.setFontSize(9);
