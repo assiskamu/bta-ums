@@ -14,6 +14,7 @@ type CatalogRawItem = {
     nameMs: string;
   };
   unit: {
+    code: string;
     labelMs: string;
   };
   jamPerUnit: number;
@@ -38,6 +39,7 @@ export type CatalogItem = {
   activityName: string;
   optionCode: string;
   optionName: string;
+  unitCode: string;
   unitLabel: string;
   jamPerUnit: number;
   sortOrder: number;
@@ -53,6 +55,7 @@ export type CatalogActivityOption = {
   id: string;
   optionCode: string;
   optionName: string;
+  unitCode: string;
   unitLabel: string;
   jamPerUnit: number;
   sortOrder: number;
@@ -81,6 +84,7 @@ const normalizeCatalogItems = (data: CatalogRawData): CatalogItem[] =>
       activityName: item.activity.nameMs,
       optionCode: item.option.code,
       optionName: item.option.nameMs,
+      unitCode: item.unit.code,
       unitLabel: item.unit.labelMs,
       jamPerUnit: item.jamPerUnit,
       sortOrder: item.sortOrder ?? 0,
@@ -118,6 +122,7 @@ const catalogActivitiesBySubCategory = normalizedCatalogItems.reduce<
     id: item.id,
     optionCode: item.optionCode,
     optionName: item.optionName,
+    unitCode: item.unitCode,
     unitLabel: item.unitLabel,
     jamPerUnit: item.jamPerUnit,
     sortOrder: item.sortOrder,
