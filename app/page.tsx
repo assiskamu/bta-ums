@@ -312,6 +312,20 @@ export default function HomePage() {
     [pathway, grade]
   );
 
+  const targetByTab = useMemo(
+    () =>
+      targetByCategory.reduce<Record<TabKey, { minHours: number }>>(
+        (accumulator, target) => {
+          accumulator[target.category as TabKey] = {
+            minHours: target.minHours,
+          };
+          return accumulator;
+        },
+        {} as Record<TabKey, { minHours: number }>
+      ),
+    [targetByCategory]
+  );
+
   const totalTargetHours = useMemo(
     () => sumMinimumTargetHours(pathway, grade),
     [pathway, grade]
@@ -643,6 +657,9 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
+              <p className="mt-4 text-xs text-slate-500">
+                Target berdasarkan Garis Panduan BTA UMS (40 jam/minggu).
+              </p>
             </div>
 
             <div className="mt-6">
@@ -703,19 +720,37 @@ export default function HomePage() {
                 Pecahan aktiviti
               </p>
               <ul className="mt-3 space-y-2 text-sm">
-                {TABS.map((tab) => (
-                  <li
-                    key={tab}
-                    className="flex items-center justify-between rounded-lg border border-slate-100 bg-white px-3 py-2"
-                  >
-                    <span className="text-slate-600">
-                      {TAB_ICONS[tab]} {tab}
-                    </span>
-                    <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">
-                      {totals.breakdown[tab].toFixed(1)} jam
-                    </span>
-                  </li>
-                ))}
+                {TABS.map((tab) => {
+                  const actualHours = totals.breakdown[tab];
+                  const targetHours = targetByTab[tab]?.minHours ?? 0;
+                  const isMet = actualHours >= targetHours;
+
+                  return (
+                    <li
+                      key={tab}
+                      className="flex items-center justify-between rounded-lg border border-slate-100 bg-white px-3 py-2"
+                    >
+                      <span className="text-slate-600">
+                        {TAB_ICONS[tab]} {tab}
+                      </span>
+                      <div className="flex items-center gap-2 text-xs font-semibold">
+                        <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-600">
+                          {actualHours.toFixed(1)} / {targetHours.toFixed(1)}{" "}
+                          jam
+                        </span>
+                        <span
+                          className={`rounded-full px-2 py-1 ${
+                            isMet
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-amber-100 text-amber-700"
+                          }`}
+                        >
+                          {isMet ? "Cukup" : "Kurang"}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </aside>
