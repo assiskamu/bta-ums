@@ -96,6 +96,16 @@ type StoredState = {
 };
 
 const STORAGE_KEY = "bta-ums-v1";
+const DEMO_OPTION_PREFERENCES: Partial<Record<TabKey, string[]>> = {
+  Pengajaran: ["BTA_TEACH_LECTURE_CLASS_SIZE_LT_50"],
+  Penyeliaan: ["BTA_SUP_TEACHING_PRACTICUM_DEFAULT"],
+  Penyelidikan: ["BTA_RES_GRANT_INTERNATIONAL_ROLE_LEAD"],
+  Penerbitan: ["BTA_PUB_JOURNAL_INDEX_SCOPUS_WOS_ERA"],
+  Pentadbiran: [
+    "BTA_ADMIN_PAID_APPOINTMENT_APPOINTMENT_VICE_CHANCELLOR",
+  ],
+  Perkhidmatan: ["BTA_SVC_UNI_COMMUNITY_ALL_LEVELS_ROLES"],
+};
 
 const createEmptyEntries = () =>
   TABS.reduce<Record<TabKey, Entry[]>>((accumulator, tab) => {
@@ -188,6 +198,8 @@ export default function HomePage() {
   const [pinnedInfoOptionId, setPinnedInfoOptionId] = useState<string | null>(
     null
   );
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const quantityInputRef = useRef<HTMLInputElement>(null);
 
   const catalogActivitiesBySubCategory = useMemo(
@@ -219,6 +231,24 @@ export default function HomePage() {
       console.error("Failed to load saved state", error);
     }
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+    toastTimeoutRef.current = setTimeout(() => {
+      setToastMessage(null);
+    }, 3500);
+  };
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -449,6 +479,91 @@ export default function HomePage() {
     [pathway, grade]
   );
 
+  const buildDemoEntry = (tab: TabKey) => {
+    const subCategoryId = TAB_SUBCATEGORIES[tab];
+    const activities = catalogActivitiesBySubCategory[subCategoryId] ?? [];
+    if (activities.length === 0) {
+      return null;
+    }
+
+    const shouldUsePreferences = Boolean(targetByTab[tab]);
+    const preferredOptionIds = shouldUsePreferences
+      ? (DEMO_OPTION_PREFERENCES[tab] ?? [])
+      : [];
+    let selectedActivity = activities[0];
+    let selectedOption = activities[0]?.options[0];
+
+    for (const optionId of preferredOptionIds) {
+      const activityMatch = activities.find((activity) =>
+        activity.options.some((option) => option.id === optionId)
+      );
+      if (activityMatch) {
+        selectedActivity = activityMatch;
+        selectedOption = activityMatch.options.find(
+          (option) => option.id === optionId
+        );
+        break;
+      }
+    }
+
+    if (!selectedOption) {
+      return null;
+    }
+
+    const quantityValue = 1;
+    const totalWeeklyHours = calculateWeeklyHours({
+      quantity: quantityValue,
+      jamPerUnit: selectedOption.jamPerUnit,
+      period,
+      settings: periodSettings,
+    });
+
+    return {
+      id: `${tab}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      activity: `${selectedActivity.activityName} — ${selectedOption.optionName}`,
+      units: `${quantityValue} ${formatUnitLabel(selectedOption.unitLabel)}`,
+      baseQuantity: quantityValue,
+      period,
+      computedWeeklyHours: totalWeeklyHours,
+    } satisfies Entry;
+  };
+
+  const handleAddDemoEntries = () => {
+    const demoTabs: TabKey[] = [
+      "Pengajaran",
+      "Penyeliaan",
+      "Penyelidikan",
+      "Penerbitan",
+      "Pentadbiran",
+      "Perkhidmatan",
+    ];
+
+    const orderedTabs = [
+      ...demoTabs.filter((tab) => targetByTab[tab]),
+      ...demoTabs.filter((tab) => !targetByTab[tab]),
+    ];
+
+    setEntriesByTab((current) => {
+      const next = { ...current };
+      orderedTabs.forEach((tab) => {
+        const demoEntry = buildDemoEntry(tab);
+        if (demoEntry) {
+          next[tab] = [...next[tab], demoEntry];
+        }
+      });
+      return next;
+    });
+    setErrorsByTab((current) => {
+      const next = { ...current };
+      orderedTabs.forEach((tab) => {
+        next[tab] = "";
+      });
+      return next;
+    });
+
+    showToast("Contoh dimasukkan — sila ubah ikut situasi sebenar.");
+  };
+
   const activeSubCategoryId = TAB_SUBCATEGORIES[activeTab];
   const activitiesForActiveTab =
     catalogActivitiesBySubCategory[activeSubCategoryId] ?? [];
@@ -514,6 +629,11 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-slate-50">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">
+        {toastMessage ? (
+          <div className="fixed right-6 top-6 z-50 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800 shadow-lg">
+            {toastMessage}
+          </div>
+        ) : null}
         <header className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-lg shadow-slate-100">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
@@ -611,6 +731,13 @@ export default function HomePage() {
                 onChange={(event) => handleYearWeeksChange(event.target.value)}
                 className="w-24 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
               />
+              <button
+                type="button"
+                onClick={handleAddDemoEntries}
+                className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-100"
+              >
+                Tambah contoh
+              </button>
             </div>
           </div>
         </header>
