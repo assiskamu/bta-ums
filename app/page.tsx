@@ -3,8 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  calculateWeeklyHours,
+  DEFAULT_PERIOD_SETTINGS,
   getMinimumTargetGrades,
   getMinimumTargetsByCategory,
+  PERIODS,
+  type Period,
+  type PeriodSettings,
   sumMinimumTargetHours,
 } from "../packages/core/src";
 import { getCatalogActivitiesBySubCategory } from "../lib/catalog";
@@ -71,7 +76,9 @@ type Entry = {
   id: string;
   activity: string;
   units: string;
-  hours: number;
+  baseQuantity: number;
+  period: Period;
+  computedWeeklyHours: number;
 };
 
 type DraftEntry = {
@@ -83,6 +90,8 @@ type DraftEntry = {
 type StoredState = {
   pathway: (typeof PATHWAYS)[number];
   grade: string;
+  period: Period;
+  periodSettings: PeriodSettings;
   entriesByTab: Record<TabKey, Entry[]>;
 };
 
@@ -106,6 +115,11 @@ const createEmptyErrors = () =>
     return accumulator;
   }, {} as Record<TabKey, string>);
 
+const parseUnitsQuantity = (units: string) => {
+  const parsed = Number.parseFloat(units);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
 const normalizeStoredState = (value: StoredState | null): StoredState | null => {
   if (!value) {
     return null;
@@ -116,21 +130,41 @@ const normalizeStoredState = (value: StoredState | null): StoredState | null => 
     : PATHWAYS[0];
   const grades = getMinimumTargetGrades(pathway);
   const grade = grades.includes(value.grade) ? value.grade : grades[0] ?? "";
+  const period = PERIODS.includes(value.period) ? value.period : PERIODS[0];
+  const periodSettings: PeriodSettings = {
+    semesterWeeks:
+      value.periodSettings?.semesterWeeks ?? DEFAULT_PERIOD_SETTINGS.semesterWeeks,
+    yearWeeks: value.periodSettings?.yearWeeks ?? DEFAULT_PERIOD_SETTINGS.yearWeeks,
+  };
   const normalizedEntries = createEmptyEntries();
 
   TABS.forEach((tab) => {
     const entries = value.entriesByTab?.[tab] ?? [];
     normalizedEntries[tab] = entries
       .filter((entry) => entry && typeof entry.activity === "string")
-      .map((entry) => ({
-        id: entry.id ?? `${tab}-${Date.now()}`,
-        activity: entry.activity,
-        units: entry.units ?? "-",
-        hours: Number.isFinite(entry.hours) ? entry.hours : 0,
-      }));
+        .map((entry) => ({
+          id: entry.id ?? `${tab}-${Date.now()}`,
+          activity: entry.activity,
+          units: entry.units ?? "-",
+          baseQuantity: Number.isFinite(entry.baseQuantity)
+            ? entry.baseQuantity
+            : parseUnitsQuantity(entry.units ?? ""),
+          period: PERIODS.includes(entry.period) ? entry.period : PERIODS[0],
+          computedWeeklyHours: Number.isFinite(entry.computedWeeklyHours)
+            ? entry.computedWeeklyHours
+            : Number.isFinite(entry.hours)
+              ? entry.hours
+              : 0,
+        }));
   });
 
-  return { pathway, grade, entriesByTab: normalizedEntries };
+  return {
+    pathway,
+    grade,
+    period,
+    periodSettings,
+    entriesByTab: normalizedEntries,
+  };
 };
 
 export default function HomePage() {
@@ -139,6 +173,10 @@ export default function HomePage() {
   );
   const [grade, setGrade] = useState<string>(
     getMinimumTargetGrades(PATHWAYS[0])[0] ?? ""
+  );
+  const [period, setPeriod] = useState<Period>(PERIODS[0]);
+  const [periodSettings, setPeriodSettings] = useState<PeriodSettings>(
+    DEFAULT_PERIOD_SETTINGS
   );
   const [activeTab, setActiveTab] = useState<TabKey>(TABS[0]);
   const [entriesByTab, setEntriesByTab] = useState(createEmptyEntries);
@@ -173,6 +211,8 @@ export default function HomePage() {
       if (normalized) {
         setPathway(normalized.pathway);
         setGrade(normalized.grade);
+        setPeriod(normalized.period);
+        setPeriodSettings(normalized.periodSettings);
         setEntriesByTab(normalized.entriesByTab);
       }
     } catch (error) {
@@ -185,9 +225,15 @@ export default function HomePage() {
       return;
     }
 
-    const payload: StoredState = { pathway, grade, entriesByTab };
+    const payload: StoredState = {
+      pathway,
+      grade,
+      period,
+      periodSettings,
+      entriesByTab,
+    };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  }, [entriesByTab, grade, pathway]);
+  }, [entriesByTab, grade, pathway, period, periodSettings]);
 
   useEffect(() => {
     const grades = getMinimumTargetGrades(pathway);
@@ -232,6 +278,22 @@ export default function HomePage() {
     updateDraft(tab, { quantity });
   };
 
+  const handleSemesterWeeksChange = (value: string) => {
+    const parsed = Number.parseInt(value, 10);
+    setPeriodSettings((current) => ({
+      ...current,
+      semesterWeeks: Number.isFinite(parsed) && parsed > 0 ? parsed : 0,
+    }));
+  };
+
+  const handleYearWeeksChange = (value: string) => {
+    const parsed = Number.parseInt(value, 10);
+    setPeriodSettings((current) => ({
+      ...current,
+      yearWeeks: Number.isFinite(parsed) && parsed > 0 ? parsed : 0,
+    }));
+  };
+
   const handleAddEntry = (tab: TabKey) => {
     const draft = draftsByTab[tab];
     const subCategoryId = TAB_SUBCATEGORIES[tab];
@@ -243,7 +305,12 @@ export default function HomePage() {
       (option) => option.id === draft.optionId
     );
     const quantityValue = Number.parseFloat(draft.quantity);
-    const totalHours = quantityValue * (selectedOption?.jamPerUnit ?? 0);
+    const totalWeeklyHours = calculateWeeklyHours({
+      quantity: quantityValue,
+      jamPerUnit: selectedOption?.jamPerUnit ?? 0,
+      period,
+      settings: periodSettings,
+    });
     const unitKey = selectedOption?.unitLabel.toLowerCase() ?? "";
     const quantityConfig = QUANTITY_CONFIG[unitKey] ?? {
       label: "Kuantiti",
@@ -287,7 +354,9 @@ export default function HomePage() {
       id: `${tab}-${Date.now()}`,
       activity: `${selectedActivity.activityName} — ${selectedOption.optionName}`,
       units: `${quantityValue} ${formatUnitLabel(selectedOption.unitLabel)}`,
-      hours: totalHours,
+      baseQuantity: quantityValue,
+      period,
+      computedWeeklyHours: totalWeeklyHours,
     };
 
     setEntriesByTab((current) => ({
@@ -336,7 +405,7 @@ export default function HomePage() {
   const totals = useMemo(() => {
     const breakdown = TABS.reduce<Record<TabKey, number>>((accumulator, tab) => {
       const tabTotal = entriesByTab[tab].reduce(
-        (sum, entry) => sum + (entry.hours || 0),
+        (sum, entry) => sum + (entry.computedWeeklyHours || 0),
         0
       );
       accumulator[tab] = tabTotal;
@@ -405,7 +474,22 @@ export default function HomePage() {
     step: 1,
     allowDecimal: false,
   };
-  const totalDraftHours = normalizedQuantity * jamPerUnit;
+  const totalDraftWeeklyHours = calculateWeeklyHours({
+    quantity: normalizedQuantity,
+    jamPerUnit,
+    period,
+    settings: periodSettings,
+  });
+  const periodDivider =
+    period === "Semester"
+      ? periodSettings.semesterWeeks
+      : period === "Tahunan"
+        ? periodSettings.yearWeeks
+        : 1;
+  const calculationText =
+    period === "Mingguan"
+      ? `${normalizedQuantity} × ${jamPerUnit.toFixed(1)} = ${totalDraftWeeklyHours.toFixed(1)} jam/minggu`
+      : `${normalizedQuantity} × ${jamPerUnit.toFixed(1)} ÷ ${periodDivider} = ${totalDraftWeeklyHours.toFixed(1)} jam/minggu`;
   const rateText =
     unitLabel === "-"
       ? "-"
@@ -440,7 +524,7 @@ export default function HomePage() {
                 Pilih laluan dan tambah aktiviti mengikut kategori.
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <label
                 className="text-sm font-medium text-slate-600"
                 htmlFor="pathway"
@@ -479,6 +563,54 @@ export default function HomePage() {
                   </option>
                 ))}
               </select>
+              <label
+                className="text-sm font-medium text-slate-600"
+                htmlFor="period"
+              >
+                Tempoh
+              </label>
+              <select
+                id="period"
+                value={period}
+                onChange={(event) => setPeriod(event.target.value as Period)}
+                className="w-40 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              >
+                {PERIODS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <label
+                className="text-sm font-medium text-slate-600"
+                htmlFor="semester-weeks"
+              >
+                Semester (minggu)
+              </label>
+              <input
+                id="semester-weeks"
+                type="number"
+                min="1"
+                value={periodSettings.semesterWeeks}
+                onChange={(event) =>
+                  handleSemesterWeeksChange(event.target.value)
+                }
+                className="w-24 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+              <label
+                className="text-sm font-medium text-slate-600"
+                htmlFor="year-weeks"
+              >
+                Tahunan (minggu)
+              </label>
+              <input
+                id="year-weeks"
+                type="number"
+                min="1"
+                value={periodSettings.yearWeeks}
+                onChange={(event) => handleYearWeeksChange(event.target.value)}
+                className="w-24 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
             </div>
           </div>
         </header>
@@ -651,8 +783,10 @@ export default function HomePage() {
                   Cara kira
                 </p>
                 <p className="mt-1 text-sm font-semibold text-slate-700">
-                  {normalizedQuantity} × {jamPerUnit.toFixed(1)} ={" "}
-                  {totalDraftHours.toFixed(1)} jam
+                  {calculationText}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Tempoh: {period}
                 </p>
               </div>
               {errorsByTab[activeTab] ? (
@@ -676,7 +810,9 @@ export default function HomePage() {
                         <tr>
                           <th className="px-3 py-2">Aktiviti</th>
                           <th className="px-3 py-2">Unit</th>
-                          <th className="px-3 py-2 text-right">Jam</th>
+                          <th className="px-3 py-2 text-right">
+                            Jam/minggu (dikira)
+                          </th>
                           <th className="px-3 py-2 text-right">Tindakan</th>
                         </tr>
                       </thead>
@@ -694,10 +830,13 @@ export default function HomePage() {
                               {entry.activity}
                             </td>
                             <td className="px-3 py-3 text-slate-700">
-                              {entry.units}
+                              <div>{entry.units}</div>
+                              <div className="text-xs text-slate-400">
+                                Tempoh: {entry.period}
+                              </div>
                             </td>
                             <td className="px-3 py-3 text-right text-slate-700">
-                              {entry.hours.toFixed(1)}
+                              {entry.computedWeeklyHours.toFixed(1)}
                             </td>
                             <td className="px-3 py-3 text-right">
                               <button

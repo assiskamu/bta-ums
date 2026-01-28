@@ -2,6 +2,11 @@
 
 MVP: A web calculator for UMS Beban Tugas Akademik (BTA) based on guideline tables.
 
+## Tempoh mode
+
+Entries can be captured as Mingguan, Semester, or Tahunan and are normalized to
+weekly hours using configurable semester and annual week counts.
+
 ## How to run locally
 
 ```bash
