@@ -30,4 +30,19 @@ describe("minimum target tables", () => {
       });
     });
   });
+
+  it("sums to 100% for each pathway grade", () => {
+    getMinimumTargetPathways().forEach((pathway) => {
+      const grades = getMinimumTargetGrades(pathway);
+
+      grades.forEach((grade) => {
+        const targets = getMinimumTargetsByCategory(pathway, grade);
+        const totalPercent = targets.reduce(
+          (sum, target) => sum + target.percent,
+          0
+        );
+        expect(totalPercent).toBeCloseTo(1, 4);
+      });
+    });
+  });
 });

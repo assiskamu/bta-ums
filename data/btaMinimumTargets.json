@@ -1,6 +1,6 @@
 {
   "meta": {
-    "source": "TODO: Populate from Excel sheet '1. PENETAPAN KATEGORI BEBAN & %'."
+    "source": "Garis Panduan BTA UMS (40 jam/minggu)."
   },
   "categories": [
     "Pengajaran",
@@ -14,183 +14,612 @@
   "targets": {
     "Pensyarah": {
       "DS45": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.3,
+          "minHours": 12.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Penyelidikan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
       "DS51/52": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.25,
+          "minHours": 10.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyelidikan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
       "DS53/54": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.25,
+          "minHours": 10.0
+        },
+        "Penyelidikan": {
+          "percent": 0.25,
+          "minHours": 10.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        }
       },
       "VK": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Penyeliaan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penerbitan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyelidikan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.25,
+          "minHours": 10.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       }
     },
     "Guru": {
       "DG41": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.4,
+          "minHours": 16.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penyelidikan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
       "DG44": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.35,
+          "minHours": 14.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penyelidikan": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
       "DG48": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.3,
+          "minHours": 12.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Penyelidikan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
       "DG52": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.25,
+          "minHours": 10.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyelidikan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
       "DG54": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyelidikan": {
+          "percent": 0.25,
+          "minHours": 10.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       }
     },
     "Penyelidik": {
-      "BTA UMUM": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+      "BTA Utama": {
+        "Pengajaran": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.25,
+          "minHours": 10.0
+        },
+        "Penyelidikan": {
+          "percent": 0.4,
+          "minHours": 16.0
+        },
+        "Persidangan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Pentadbiran": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        }
+      },
+      "BTA Umum": {
+        "Pengajaran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyelidikan": {
+          "percent": 0.35,
+          "minHours": 14.0
+        },
+        "Persidangan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Pentadbiran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        }
       }
     },
     "Pentadbir": {
-      "KETUA PROGRAM/ PENYELARAS": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+      "Ketua Program/Penyelaras": {
+        "Pengajaran": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penyelidikan": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.35,
+          "minHours": 14.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
-      "TIMBALAN DEKAN/ TIMBALAN PENGARAH": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+      "Timbalan Dekan/Pengarah": {
+        "Pengajaran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penyeliaan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penerbitan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penyelidikan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.45,
+          "minHours": 18.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.15,
+          "minHours": 6.0
+        }
       },
-      "DEKAN/ PENGARAH": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+      "Dekan/Pengarah": {
+        "Pengajaran": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penyeliaan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penerbitan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penyelidikan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.6,
+          "minHours": 24.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.15,
+          "minHours": 6.0
+        }
       },
-      "TIMBALAN/ PENOLONG NAIB CANSELOR": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+      "Timbalan/Penolong Naib Canselor": {
+        "Pengajaran": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penyeliaan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penerbitan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penyelidikan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.65,
+          "minHours": 26.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
-      "NAIB CANSELOR": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+      "Naib Canselor": {
+        "Pengajaran": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penyeliaan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penerbitan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Penyelidikan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.7,
+          "minHours": 28.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        }
       }
     },
     "Perubatan": {
       "DU51/52": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.25,
+          "minHours": 10.0
+        },
+        "Penyeliaan": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Penerbitan": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Penyelidikan": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
       "DU54": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyeliaan": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Penerbitan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyelidikan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
       "DU56": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyelidikan": {
+          "percent": 0.25,
+          "minHours": 10.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.15,
+          "minHours": 6.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       },
       "VK7": {
-        "Pengajaran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyeliaan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penerbitan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Penyelidikan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Persidangan": { "percent": 0.142857, "minHours": 5.714285 },
-        "Pentadbiran": { "percent": 0.142857, "minHours": 5.714285 },
-        "Perkhidmatan": { "percent": 0.142857, "minHours": 5.714285 }
+        "Pengajaran": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penyeliaan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        },
+        "Penerbitan": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Penyelidikan": {
+          "percent": 0.25,
+          "minHours": 10.0
+        },
+        "Persidangan": {
+          "percent": 0.05,
+          "minHours": 2.0
+        },
+        "Pentadbiran": {
+          "percent": 0.2,
+          "minHours": 8.0
+        },
+        "Perkhidmatan": {
+          "percent": 0.1,
+          "minHours": 4.0
+        }
       }
     }
   }

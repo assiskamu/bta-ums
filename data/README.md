@@ -19,5 +19,5 @@ This folder stores BTA tables and reference data used by the UMS app.
 
 - `bta_tables.example.json` defines the keys and structure for BTA tables without real values.
 - `btaMinimumTargets.json` stores minimum target percentages and hours per pathway and grade/role.
-- Populate the `entries` arrays with official values from the UMS guideline when available.
+- Values are derived from the Garis Panduan BTA UMS (40 jam/minggu); update alongside any guideline changes.
 - Keep source notes and citations in documentation alongside any future value updates.
