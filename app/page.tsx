@@ -14,9 +14,11 @@ import {
 } from "../packages/core/src";
 import {
   getCatalogActivitiesBySubCategory,
+  getCatalogMeta,
   type CatalogActivity,
   type CatalogActivityOption,
 } from "../lib/catalog";
+import { exportBtaPdf } from "../lib/exportPdf";
 
 const PATHWAYS = [
   "Guru",
@@ -266,6 +268,7 @@ export default function HomePage() {
     () => getCatalogActivitiesBySubCategory(),
     []
   );
+  const catalogMeta = useMemo(() => getCatalogMeta(), []);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -796,6 +799,66 @@ export default function HomePage() {
     link.click();
     window.URL.revokeObjectURL(url);
     showToast("CSV berjaya dieksport.");
+  };
+
+  const handleExportPdf = async () => {
+    if (!hasEntries || typeof window === "undefined") {
+      return;
+    }
+
+    const generatedAt = new Date();
+    const entriesForPdf = TABS.flatMap((tab) =>
+      entriesByTab[tab].map((entry) => {
+        const { activityName, optionName, option } = getCatalogOptionForEntry(
+          tab,
+          entry
+        );
+        const unitLabel = getUnitLabelForEntry(entry, option);
+        const reference = option?.references?.[0] ?? null;
+        const referenceText = reference
+          ? `${reference.doc} ${reference.section}${
+              reference.page ? ` (ms ${reference.page})` : ""
+            }`
+          : "-";
+
+        return {
+          category: tab,
+          activity: activityName,
+          activityCategory: optionName || "-",
+          quantity: entry.baseQuantity,
+          unit: unitLabel,
+          rate: entry.jamPerUnit ?? null,
+          period: entry.period,
+          weeklyHours: getEntryWeeklyHours(entry),
+          reference: referenceText,
+        };
+      })
+    );
+
+    try {
+      await exportBtaPdf({
+        pathway,
+        gradeRole: grade,
+        periodMode: period,
+        generatedAt,
+        totals: { totalWeeklyHours: totals.totalHours },
+        targetMinimum: targetByCategory.map((target) => ({
+          category: target.category,
+          percent: target.percent,
+          hours: target.minHours,
+        })),
+        actualBreakdown: targetByCategory.map((target) => ({
+          category: target.category,
+          actualWeeklyHours: totals.breakdown[target.category as TabKey] ?? 0,
+        })),
+        entries: entriesForPdf,
+        guidelineVersion: catalogMeta?.version ?? "-",
+      });
+      showToast("PDF berjaya dieksport.");
+    } catch (error) {
+      console.error("Failed to export PDF", error);
+      showToast("Gagal eksport PDF. Sila cuba lagi.");
+    }
   };
 
   const buildDemoEntry = (subCategoryId: DemoSubCategoryId, tab: TabKey) => {
@@ -1330,6 +1393,14 @@ export default function HomePage() {
                 className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
               >
                 Eksport CSV
+              </button>
+              <button
+                type="button"
+                onClick={handleExportPdf}
+                disabled={!hasEntries}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+              >
+                Eksport PDF
               </button>
             </div>
             {!hasEntries ? (

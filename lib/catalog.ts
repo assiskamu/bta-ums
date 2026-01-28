@@ -28,7 +28,16 @@ type CatalogRawItem = {
   }[];
 };
 
+export type CatalogMeta = {
+  version?: string;
+  source?: string;
+  effectiveDate?: string;
+  unitBaseHoursPerWeek?: number;
+  notes?: string;
+};
+
 type CatalogRawData = {
+  meta?: CatalogMeta;
   items: CatalogRawItem[];
 };
 
@@ -96,6 +105,8 @@ const normalizedCatalogItems = normalizeCatalogItems(
   catalogData as CatalogRawData
 );
 
+const catalogMeta = (catalogData as CatalogRawData).meta ?? null;
+
 const catalogActivitiesBySubCategory = normalizedCatalogItems.reduce<
   Record<string, CatalogActivity[]>
 >((accumulator, item) => {
@@ -151,3 +162,5 @@ Object.values(catalogActivitiesBySubCategory).forEach((activities) => {
 
 export const getCatalogActivitiesBySubCategory = () =>
   catalogActivitiesBySubCategory;
+
+export const getCatalogMeta = () => catalogMeta;
