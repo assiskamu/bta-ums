@@ -76,6 +76,45 @@ const formatUnitLabel = (label: string) =>
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
+const splitActivityLabel = (label: string) => {
+  const separator = " — ";
+  if (!label.includes(separator)) {
+    return { activityName: label, optionName: "" };
+  }
+  const [activityName, optionName] = label.split(separator);
+  return {
+    activityName: activityName ?? label,
+    optionName: optionName ?? "",
+  };
+};
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
+const escapeCsv = (value: string | number | null | undefined) => {
+  const stringValue = value == null ? "" : String(value);
+  if (/[",\n\r]/.test(stringValue)) {
+    return `"${stringValue.replaceAll('"', '""')}"`;
+  }
+  return stringValue;
+};
+
+const sanitizeFilePart = (value: string) => {
+  const sanitized = value
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9-_]/g, "");
+  return sanitized.length > 0 ? sanitized : "data";
+};
+
+const formatDateForFilename = (date: Date) =>
+  date.toISOString().slice(0, 10);
+
 type Entry = {
   id: string;
   activity: string;
@@ -472,6 +511,13 @@ export default function HomePage() {
     return { breakdown, totalHours };
   }, [entriesByTab]);
 
+  const totalEntries = useMemo(
+    () =>
+      TABS.reduce((sum, tab) => sum + entriesByTab[tab].length, 0),
+    [entriesByTab]
+  );
+  const hasEntries = totalEntries > 0;
+
   const gradesForPathway = useMemo(
     () => getMinimumTargetGrades(pathway),
     [pathway]
@@ -500,6 +546,257 @@ export default function HomePage() {
     () => sumMinimumTargetHours(pathway, grade),
     [pathway, grade]
   );
+
+  const getCatalogOptionForEntry = (tab: TabKey, entry: Entry) => {
+    const { activityName, optionName } = splitActivityLabel(entry.activity);
+    const subCategoryId = TAB_SUBCATEGORIES[tab];
+    const activities = catalogActivitiesBySubCategory[subCategoryId] ?? [];
+    const matchedActivity =
+      activities.find((activity) => activity.activityName === activityName) ??
+      null;
+    const matchedOption =
+      matchedActivity?.options.find(
+        (option) => option.optionName === optionName
+      ) ?? null;
+
+    return { activityName, optionName, option: matchedOption };
+  };
+
+  const getUnitLabelForEntry = (
+    entry: Entry,
+    option: CatalogActivityOption | null
+  ) => {
+    if (option?.unitLabel) {
+      return formatUnitLabel(option.unitLabel);
+    }
+    const quantityText = `${entry.baseQuantity}`;
+    if (entry.units.startsWith(quantityText)) {
+      return entry.units.slice(quantityText.length).trim();
+    }
+    const parts = entry.units.split(" ");
+    return parts.length > 1 ? parts.slice(1).join(" ") : entry.units;
+  };
+
+  const buildPrintHtml = (generatedAt: Date) => {
+    const generatedAtText = generatedAt.toLocaleString("ms-MY");
+    const targetRows = targetByCategory
+      .map(
+        (target) => `<tr>
+          <td>${escapeHtml(target.category)}</td>
+          <td class="text-right">${target.minHours.toFixed(1)}</td>
+          <td class="text-right">${(target.percent * 100).toFixed(0)}%</td>
+        </tr>`
+      )
+      .join("");
+
+    const actualRows = targetByCategory
+      .map((target) => {
+        const actual = totals.breakdown[target.category as TabKey];
+        const isMet = actual >= target.minHours;
+        return `<tr>
+          <td>${escapeHtml(target.category)}</td>
+          <td class="text-right">${actual.toFixed(1)}</td>
+          <td class="text-right">${target.minHours.toFixed(1)}</td>
+          <td>${isMet ? "Cukup" : "Kurang"}</td>
+        </tr>`;
+      })
+      .join("");
+
+    const entryRows = TABS.flatMap((tab) =>
+      entriesByTab[tab].map((entry) => {
+        const { activityName, optionName, option } = getCatalogOptionForEntry(
+          tab,
+          entry
+        );
+        const unitLabel = getUnitLabelForEntry(entry, option);
+        const reference = option?.references?.[0] ?? null;
+        const referenceText = reference
+          ? `${reference.doc} ${reference.section}${
+              reference.page ? ` (ms ${reference.page})` : ""
+            }`
+          : "-";
+        return `<tr>
+          <td>${escapeHtml(tab)}</td>
+          <td>${escapeHtml(activityName)}</td>
+          <td>${escapeHtml(optionName || "-")}</td>
+          <td class="text-right">${escapeHtml(
+            `${entry.baseQuantity} ${unitLabel}`
+          )}</td>
+          <td class="text-right">${
+            entry.jamPerUnit != null ? entry.jamPerUnit.toFixed(1) : "-"
+          }</td>
+          <td>${escapeHtml(entry.period)}</td>
+          <td class="text-right">${getEntryWeeklyHours(entry).toFixed(1)}</td>
+          <td>${escapeHtml(referenceText)}</td>
+        </tr>`;
+      })
+    ).join("");
+
+    return `<!doctype html>
+      <html lang="ms">
+        <head>
+          <meta charset="utf-8" />
+          <title>Laporan BTA UMS</title>
+          <style>
+            @page { size: A4; margin: 16mm; }
+            body { font-family: Arial, sans-serif; color: #0f172a; font-size: 12px; }
+            h1 { font-size: 20px; margin-bottom: 4px; }
+            h2 { font-size: 14px; margin: 20px 0 8px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+            th, td { border: 1px solid #cbd5f5; padding: 6px 8px; vertical-align: top; }
+            th { background: #f1f5f9; text-align: left; }
+            .meta { margin-top: 8px; }
+            .meta div { margin-bottom: 4px; }
+            .text-right { text-align: right; }
+            tr { page-break-inside: avoid; }
+          </style>
+        </head>
+        <body>
+          <h1>Laporan BTA UMS</h1>
+          <div class="meta">
+            <div><strong>Pathway, Grade/Role:</strong> ${escapeHtml(
+              `${pathway} · ${grade}`
+            )}</div>
+            <div><strong>Tempoh:</strong> ${escapeHtml(period)}</div>
+            <div><strong>Tarikh/Capaian masa:</strong> ${escapeHtml(
+              generatedAtText
+            )}</div>
+            <div><strong>Total Jam/Minggu:</strong> ${totals.totalHours.toFixed(
+              1
+            )}</div>
+          </div>
+
+          <h2>Target Minimum</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Kategori</th>
+                <th class="text-right">Sasaran (jam/minggu)</th>
+                <th class="text-right">Peratus</th>
+              </tr>
+            </thead>
+            <tbody>${targetRows}</tbody>
+          </table>
+
+          <h2>Actual vs Target</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Kategori</th>
+                <th class="text-right">Jam/minggu</th>
+                <th class="text-right">Sasaran</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>${actualRows}</tbody>
+          </table>
+
+          <h2>Senarai Aktiviti</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Kategori</th>
+                <th>Aktiviti</th>
+                <th>Kategori Aktiviti</th>
+                <th class="text-right">Kuantiti</th>
+                <th class="text-right">Kadar (jam/unit)</th>
+                <th>Tempoh</th>
+                <th class="text-right">Jam/minggu</th>
+                <th>Rujukan</th>
+              </tr>
+            </thead>
+            <tbody>${entryRows}</tbody>
+          </table>
+        </body>
+      </html>`;
+  };
+
+  const handlePrintReport = () => {
+    if (!hasEntries || typeof window === "undefined") {
+      return;
+    }
+    const printWindow = window.open("", "_blank", "noopener,noreferrer");
+    if (!printWindow) {
+      showToast("Pop-up disekat. Sila benarkan untuk mencetak laporan.");
+      return;
+    }
+    const generatedAt = new Date();
+    const html = buildPrintHtml(generatedAt);
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 400);
+  };
+
+  const handleExportCsv = () => {
+    if (!hasEntries || typeof window === "undefined") {
+      return;
+    }
+    const generatedAt = new Date();
+    const generatedAtText = generatedAt.toISOString();
+    const headers = [
+      "pathway",
+      "gradeRole",
+      "periodMode",
+      "generatedAt",
+      "category",
+      "activity",
+      "option",
+      "quantity",
+      "unitLabel",
+      "rateJamPerUnit",
+      "period",
+      "weeklyHours",
+      "referenceDoc",
+      "referenceSection",
+    ];
+    const rows = TABS.flatMap((tab) =>
+      entriesByTab[tab].map((entry) => {
+        const { activityName, optionName, option } = getCatalogOptionForEntry(
+          tab,
+          entry
+        );
+        const unitLabel = getUnitLabelForEntry(entry, option);
+        const reference = option?.references?.[0] ?? null;
+        return [
+          pathway,
+          grade,
+          period,
+          generatedAtText,
+          tab,
+          activityName,
+          optionName,
+          entry.baseQuantity,
+          unitLabel,
+          entry.jamPerUnit ?? "",
+          entry.period,
+          getEntryWeeklyHours(entry).toFixed(1),
+          reference?.doc ?? "",
+          reference?.section ?? "",
+        ];
+      })
+    );
+    const csvContent = [
+      headers.map(escapeCsv).join(","),
+      ...rows.map((row) => row.map(escapeCsv).join(",")),
+    ].join("\r\n");
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const fileName = `bta-ums_${sanitizeFilePart(
+      pathway
+    )}_${sanitizeFilePart(grade)}_${formatDateForFilename(generatedAt)}.csv`;
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    showToast("CSV berjaya dieksport.");
+  };
 
   const buildDemoEntry = (subCategoryId: DemoSubCategoryId, tab: TabKey) => {
     const activities = catalogActivitiesBySubCategory[subCategoryId] ?? [];
@@ -1017,6 +1314,29 @@ export default function HomePage() {
                 </span>
               </div>
             </div>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={handlePrintReport}
+                disabled={!hasEntries}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+              >
+                Cetak
+              </button>
+              <button
+                type="button"
+                onClick={handleExportCsv}
+                disabled={!hasEntries}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+              >
+                Eksport CSV
+              </button>
+            </div>
+            {!hasEntries ? (
+              <p className="mt-2 text-xs text-slate-400">
+                Tiada data untuk dieksport.
+              </p>
+            ) : null}
 
             <div className="mt-6 rounded-xl border border-slate-200/80 bg-slate-50 p-4">
               <p className="text-xs font-semibold uppercase text-slate-500">
