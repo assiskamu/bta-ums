@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   getMinimumTargetGrades,
@@ -48,6 +48,24 @@ const TAB_SUBCATEGORIES: Record<TabKey, string> = {
   Pentadbiran: "SUB_ADMIN",
   Perkhidmatan: "SUB_SVC",
 };
+
+const QUANTITY_CONFIG: Record<
+  string,
+  { label: string; step: number; allowDecimal: boolean }
+> = {
+  jam: { label: "Jumlah jam", step: 0.5, allowDecimal: true },
+  pelajar: { label: "Bilangan pelajar", step: 1, allowDecimal: false },
+  penerbitan: { label: "Bilangan penerbitan", step: 1, allowDecimal: false },
+  geran: { label: "Bilangan geran", step: 1, allowDecimal: false },
+  hari: { label: "Bilangan hari", step: 1, allowDecimal: false },
+  lantikan: { label: "Bilangan lantikan", step: 1, allowDecimal: false },
+};
+
+const formatUnitLabel = (label: string) =>
+  label
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 
 type Entry = {
   id: string;
@@ -126,6 +144,7 @@ export default function HomePage() {
   const [entriesByTab, setEntriesByTab] = useState(createEmptyEntries);
   const [draftsByTab, setDraftsByTab] = useState(createEmptyDrafts);
   const [errorsByTab, setErrorsByTab] = useState(createEmptyErrors);
+  const quantityInputRef = useRef<HTMLInputElement>(null);
 
   const catalogActivitiesBySubCategory = useMemo(
     () => getCatalogActivitiesBySubCategory(),
@@ -195,11 +214,12 @@ export default function HomePage() {
     updateDraft(tab, {
       activityCode,
       optionId: selectedActivity?.options[0]?.id ?? "",
+      quantity: "",
     });
   };
 
   const handleOptionChange = (tab: TabKey, optionId: string) => {
-    updateDraft(tab, { optionId });
+    updateDraft(tab, { optionId, quantity: "" });
   };
 
   const handleQuantityChange = (tab: TabKey, quantity: string) => {
@@ -218,6 +238,12 @@ export default function HomePage() {
     );
     const quantityValue = Number.parseFloat(draft.quantity);
     const totalHours = quantityValue * (selectedOption?.jamPerUnit ?? 0);
+    const unitKey = selectedOption?.unitLabel.toLowerCase() ?? "";
+    const quantityConfig = QUANTITY_CONFIG[unitKey] ?? {
+      label: "Kuantiti",
+      step: 1,
+      allowDecimal: false,
+    };
 
     if (!selectedActivity || !selectedOption) {
       setErrorsByTab((current) => ({
@@ -235,10 +261,26 @@ export default function HomePage() {
       return;
     }
 
+    if (!quantityConfig.allowDecimal && !Number.isInteger(quantityValue)) {
+      setErrorsByTab((current) => ({
+        ...current,
+        [tab]: "Kuantiti mesti nombor bulat.",
+      }));
+      return;
+    }
+
+    if (quantityConfig.allowDecimal && !Number.isInteger(quantityValue * 2)) {
+      setErrorsByTab((current) => ({
+        ...current,
+        [tab]: "Kuantiti mesti dalam gandaan 0.5.",
+      }));
+      return;
+    }
+
     const newEntry: Entry = {
       id: `${tab}-${Date.now()}`,
       activity: `${selectedActivity.activityName} — ${selectedOption.optionName}`,
-      units: `${quantityValue} ${selectedOption.unitLabel}`,
+      units: `${quantityValue} ${formatUnitLabel(selectedOption.unitLabel)}`,
       hours: totalHours,
     };
 
@@ -250,7 +292,8 @@ export default function HomePage() {
     setDraftsByTab((current) => ({
       ...current,
       [tab]: {
-        ...current[tab],
+        activityCode: "",
+        optionId: "",
         quantity: "",
       },
     }));
@@ -345,7 +388,24 @@ export default function HomePage() {
   const normalizedQuantity = Number.isFinite(quantityValue) ? quantityValue : 0;
   const jamPerUnit = selectedOption?.jamPerUnit ?? 0;
   const unitLabel = selectedOption?.unitLabel ?? "-";
+  const formattedUnitLabel = unitLabel !== "-" ? formatUnitLabel(unitLabel) : "-";
+  const unitKey = unitLabel.toLowerCase();
+  const quantityConfig = QUANTITY_CONFIG[unitKey] ?? {
+    label: "Kuantiti",
+    step: 1,
+    allowDecimal: false,
+  };
   const totalDraftHours = normalizedQuantity * jamPerUnit;
+  const rateText =
+    unitLabel === "-"
+      ? "-"
+      : `${jamPerUnit.toFixed(1)} jam / ${formattedUnitLabel}`;
+
+  useEffect(() => {
+    if (selectedOption) {
+      quantityInputRef.current?.focus();
+    }
+  }, [activeTab, selectedOption]);
 
   const progressPercentage = Math.min((totals.totalHours / 40) * 100, 100);
   const statusLabel = totals.totalHours >= 40 ? "Cukup" : "Kurang";
@@ -484,26 +544,36 @@ export default function HomePage() {
                     Unit
                   </p>
                   <p className="mt-1 text-sm font-semibold text-slate-700">
-                    {unitLabel}
+                    {formattedUnitLabel}
                   </p>
                   <p className="mt-2 text-xs font-semibold uppercase text-slate-400">
-                    Jam/Unit
+                    Kadar
                   </p>
                   <p className="mt-1 text-sm font-semibold text-slate-700">
-                    {jamPerUnit.toFixed(1)}
+                    {rateText}
                   </p>
                 </div>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  placeholder="Kuantiti"
-                  value={draftsByTab[activeTab].quantity}
-                  onChange={(event) =>
-                    handleQuantityChange(activeTab, event.target.value)
-                  }
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                />
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor={`quantity-${activeTab}`}
+                    className="text-xs font-semibold uppercase text-slate-400"
+                  >
+                    {quantityConfig.label}
+                  </label>
+                  <input
+                    ref={quantityInputRef}
+                    id={`quantity-${activeTab}`}
+                    type="number"
+                    min="0"
+                    step={quantityConfig.step}
+                    placeholder={quantityConfig.label}
+                    value={draftsByTab[activeTab].quantity}
+                    onChange={(event) =>
+                      handleQuantityChange(activeTab, event.target.value)
+                    }
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={() => handleAddEntry(activeTab)}
