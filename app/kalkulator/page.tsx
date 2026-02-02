@@ -394,6 +394,7 @@ export default function KalkulatorPage() {
     null
   );
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const quantityInputRef = useRef<HTMLInputElement>(null);
   const importCatalogInputRef = useRef<HTMLInputElement>(null);
@@ -1187,13 +1188,14 @@ export default function KalkulatorPage() {
     if (!hasEntries || typeof window === "undefined") {
       return;
     }
+    const generatedAt = new Date();
+    const html = buildPrintHtml(generatedAt);
     const printWindow = window.open("", "_blank", "noopener,noreferrer");
     if (!printWindow) {
       showToast("Pop-up disekat. Sila benarkan untuk mencetak laporan.");
+      window.print();
       return;
     }
-    const generatedAt = new Date();
-    const html = buildPrintHtml(generatedAt);
     printWindow.document.open();
     printWindow.document.write(html);
     printWindow.document.close();
@@ -1271,7 +1273,7 @@ export default function KalkulatorPage() {
   };
 
   const handleExportPdf = async () => {
-    if (!hasEntries || typeof window === "undefined") {
+    if (!hasEntries || typeof window === "undefined" || isExportingPdf) {
       return;
     }
 
@@ -1300,6 +1302,7 @@ export default function KalkulatorPage() {
     );
 
     try {
+      setIsExportingPdf(true);
       await exportBtaPdf({
         pathway,
         gradeRole: grade,
@@ -1322,6 +1325,8 @@ export default function KalkulatorPage() {
     } catch (error) {
       console.error("Failed to export PDF", error);
       showToast("Gagal eksport PDF. Sila cuba lagi.");
+    } finally {
+      setIsExportingPdf(false);
     }
   };
 
@@ -2015,7 +2020,7 @@ export default function KalkulatorPage() {
                     type="button"
                     onClick={() => handleAddEntry(activeTab)}
                     disabled={!selectedOption || !isQuantityValid}
-                    className="btn-secondary px-5 py-2 text-sm disabled:opacity-60"
+                    className="btn-primary px-5 py-2 text-sm"
                   >
                     Tambah
                   </button>
@@ -2153,10 +2158,10 @@ export default function KalkulatorPage() {
                 <button
                   type="button"
                   onClick={handleExportPdf}
-                  disabled={!hasEntries}
-                  className="btn-secondary px-3 py-2 text-sm disabled:opacity-60"
+                  disabled={!hasEntries || isExportingPdf}
+                  className="btn-secondary px-3 py-2 text-sm"
                 >
-                  Eksport PDF
+                  {isExportingPdf ? "Menjana PDF..." : "Eksport PDF"}
                 </button>
               </div>
               {!hasEntries ? (
