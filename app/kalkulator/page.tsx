@@ -1887,25 +1887,25 @@ export default function KalkulatorPage() {
                         ))}
                       </select>
                     ) : (
-                      <>
-                        <input
-                          list={`activity-list-${activeTab}`}
-                          value={draftsByTab[activeTab].activityQuery}
-                          onChange={(event) =>
-                            handleActivityChange(activeTab, event.target.value)
-                          }
-                          placeholder="Cari aktiviti"
-                          className="w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
-                        />
-                        <datalist id={`activity-list-${activeTab}`}>
-                          {activitiesForActiveTab.map((activity) => (
-                            <option
-                              key={activity.activityCode}
-                              value={activity.activityName}
-                            />
-                          ))}
-                        </datalist>
-                      </>
+                      <select
+                        value={draftsByTab[activeTab].activityQuery}
+                        onChange={(event) =>
+                          handleActivityChange(activeTab, event.target.value)
+                        }
+                        className="w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                      >
+                        <option value="" disabled>
+                          Pilih aktiviti
+                        </option>
+                        {activitiesForActiveTab.map((activity) => (
+                          <option
+                            key={activity.activityCode}
+                            value={activity.activityName}
+                          >
+                            {activity.activityName}
+                          </option>
+                        ))}
+                      </select>
                     )}
                   </div>
                   <div className="relative flex items-start gap-2">
@@ -1913,21 +1913,23 @@ export default function KalkulatorPage() {
                       <label className="text-xs font-semibold text-slate-400">
                         Kategori Aktiviti
                       </label>
-                      <input
-                        list={`option-list-${activeTab}`}
+                      <select
                         value={draftsByTab[activeTab].optionQuery}
                         onChange={(event) =>
                           handleOptionChange(activeTab, event.target.value)
                         }
                         disabled={!selectedActivity}
-                        placeholder="Cari kategori aktiviti"
                         className="w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white disabled:cursor-not-allowed disabled:bg-slate-100 dark:disabled:bg-slate-800/70"
-                      />
-                      <datalist id={`option-list-${activeTab}`}>
+                      >
+                        <option value="" disabled>
+                          Pilih kategori aktiviti
+                        </option>
                         {optionsForSelectedActivity.map((option) => (
-                          <option key={option.id} value={option.optionName} />
+                          <option key={option.id} value={option.optionName}>
+                            {option.optionName}
+                          </option>
                         ))}
-                      </datalist>
+                      </select>
                     </div>
                     {selectedOption && selectedOptionHasInfo ? (
                       <div
