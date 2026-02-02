@@ -568,11 +568,15 @@ export default function KalkulatorPage() {
     const selectedActivity = activities.find(
       (activity) => activity.activityName.toLowerCase() === normalizedQuery
     );
+    const autoOption =
+      selectedActivity && selectedActivity.options.length === 1
+        ? selectedActivity.options[0]
+        : null;
     updateDraft(tab, {
       activityCode: selectedActivity?.activityCode ?? "",
       activityQuery,
-      optionId: selectedActivity?.options[0]?.id ?? "",
-      optionQuery: selectedActivity?.options[0]?.optionName ?? "",
+      optionId: autoOption?.id ?? "",
+      optionQuery: autoOption?.optionName ?? "",
       quantity: "",
     });
   };
