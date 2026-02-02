@@ -24,7 +24,12 @@ import {
 } from "../../lib/catalog";
 import { exportBtaPdf } from "../../lib/exportPdf";
 import { normalizeTitleCase } from "../../lib/text";
-import { getTrafficStatus } from "../../lib/trafficStatus";
+import {
+  calcOverallPercentEqualWeight,
+  calcPercent,
+  getTrafficConfig,
+  getTrafficKey,
+} from "../../lib/trafficStatus";
 import packageJson from "../../package.json";
 
 const PATHWAYS = [
@@ -1501,12 +1506,33 @@ export default function KalkulatorPage() {
   }, [activeTab, selectedOption?.id]);
 
   const weeklyTargetHours = 40;
-  const trafficStatus = getTrafficStatus(totals.totalHours, weeklyTargetHours);
-  const progressPercentage = Math.min(trafficStatus.percent, 100);
+  const totalPercent = calcPercent(totals.totalHours, weeklyTargetHours);
   const progressText = `${totals.totalHours.toFixed(1)} / ${weeklyTargetHours} jam`;
+  const totalDeltaHours = totals.totalHours - weeklyTargetHours;
   const deltaHoursLabel = `${
-    trafficStatus.delta >= 0 ? "+" : "-"
-  }${Math.abs(trafficStatus.delta).toFixed(1)} jam (${trafficStatus.percent.toFixed(1)}%)`;
+    totalDeltaHours >= 0 ? "+" : "-"
+  }${Math.abs(totalDeltaHours).toFixed(1)} jam (${totalPercent.toFixed(1)}%)`;
+  const overallPercent = calcOverallPercentEqualWeight(
+    targetByCategory.map((target) => ({
+      achieved: totals.breakdown[target.category as TabKey],
+      target: target.minHours,
+    }))
+  );
+  const overallTrafficKey = getTrafficKey(overallPercent);
+  const overallTrafficConfig = getTrafficConfig(overallTrafficKey);
+  const overallProgressPercentage = Math.min(overallPercent, 100);
+  const summaryPanelToneClasses: Record<
+    typeof overallTrafficKey,
+    string
+  > = {
+    red: "bg-red-50 border-red-200 shadow-[0_0_0_4px_rgba(239,68,68,0.15)]",
+    yellow:
+      "bg-amber-50 border-amber-200 shadow-[0_0_0_4px_rgba(245,158,11,0.15)]",
+    green:
+      "bg-emerald-50 border-emerald-200 shadow-[0_0_0_4px_rgba(16,185,129,0.15)]",
+    darkgreen:
+      "bg-emerald-100 border-emerald-300 shadow-[0_0_0_6px_rgba(16,185,129,0.22)]",
+  };
   const activeInfoOptionId = hoveredInfoOptionId ?? pinnedInfoOptionId;
 
   return (
@@ -2121,7 +2147,7 @@ export default function KalkulatorPage() {
 
           <aside
             id="ringkasan"
-            className="summary-panel relative order-2 lg:order-none lg:sticky lg:top-6 lg:self-start"
+            className={`summary-panel relative order-2 lg:order-none lg:sticky lg:top-6 lg:self-start transition-colors duration-200 transition-shadow ${summaryPanelToneClasses[overallTrafficKey]}`}
           >
             <div className="pl-4">
               <div className="flex items-center justify-between">
@@ -2130,9 +2156,9 @@ export default function KalkulatorPage() {
                 </h2>
                 <div className="flex items-center gap-2">
                   <span
-                    className={`rounded-full border px-3 py-1 text-xs font-semibold ${trafficStatus.badgeClass}`}
+                    className={`rounded-full border px-3 py-1 text-xs font-semibold ${overallTrafficConfig.badgeClass}`}
                   >
-                    {trafficStatus.label}
+                    {overallTrafficConfig.label}
                   </span>
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                     Sasaran {weeklyTargetHours} jam
@@ -2181,6 +2207,9 @@ export default function KalkulatorPage() {
                 <p className="text-sm text-slate-500 dark:text-slate-300">
                   / {weeklyTargetHours} jam
                 </p>
+                <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-300">
+                  Skor pencapaian keseluruhan: {overallPercent.toFixed(1)}%
+                </p>
                 <div className="mt-4">
                   <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-300">
                     <span>Sasaran {weeklyTargetHours} jam/minggu</span>
@@ -2191,8 +2220,8 @@ export default function KalkulatorPage() {
                   </p>
                   <div className="mt-2 h-2 w-full rounded-full bg-indigo-200/60 dark:bg-slate-700/70">
                     <div
-                      className={`h-2 rounded-full transition-all duration-700 ${trafficStatus.barClass}`}
-                      style={{ width: `${progressPercentage}%` }}
+                      className={`h-2 rounded-full transition-all duration-700 ${overallTrafficConfig.barClass}`}
+                      style={{ width: `${overallProgressPercentage}%` }}
                     />
                   </div>
                 </div>
@@ -2233,18 +2262,17 @@ export default function KalkulatorPage() {
                 </p>
               </div>
 
-            <div className="mt-6">
+              <div className="mt-6">
               <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">
                 Pencapaian kategori
               </p>
               <div className="mt-3 space-y-3">
                 {targetByCategory.map((target) => {
                   const actual = totals.breakdown[target.category as TabKey];
-                  const progress =
-                    target.minHours > 0
-                      ? Math.min((actual / target.minHours) * 100, 100)
-                      : 0;
-                  const isMet = actual >= target.minHours;
+                  const percent = calcPercent(actual, target.minHours);
+                  const trafficKey = getTrafficKey(percent);
+                  const trafficConfig = getTrafficConfig(trafficKey);
+                  const progress = Math.min(percent, 100);
 
                   return (
                     <div
@@ -2257,26 +2285,20 @@ export default function KalkulatorPage() {
                           {target.category}
                         </span>
                         <span
-                          className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                            isMet
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-amber-100 text-amber-700"
-                          }`}
+                          className={`rounded-full border px-2 py-1 text-xs font-semibold ${trafficConfig.badgeClass}`}
                         >
-                          {isMet ? "Cukup" : "Kurang"}
+                          {trafficConfig.label}
                         </span>
                       </div>
                       <div className="mt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-300">
                         <span>
                           {actual.toFixed(1)} / {target.minHours.toFixed(1)} jam
                         </span>
-                        <span>{progress.toFixed(0)}%</span>
+                        <span>{percent.toFixed(0)}%</span>
                       </div>
                       <div className="mt-2 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700/70">
                         <div
-                          className={`h-2 rounded-full transition-all duration-700 ${
-                            isMet ? "bg-emerald-500" : "bg-amber-500"
-                          }`}
+                          className={`h-2 rounded-full transition-all duration-700 ${trafficConfig.barClass}`}
                           style={{ width: `${progress}%` }}
                         />
                       </div>

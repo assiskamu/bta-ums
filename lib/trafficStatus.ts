@@ -32,19 +32,55 @@ const TRAFFIC_STATUS_CONFIG: Record<LoadKey, Omit<TrafficStatus, "key" | "percen
   },
 };
 
-export const getTrafficStatus = (total: number, target: number): TrafficStatus => {
-  const percent = target > 0 ? (total / target) * 100 : 0;
-  let key: LoadKey;
+export const getTrafficConfig = (key: LoadKey): Omit<TrafficStatus, "key" | "percent" | "delta"> =>
+  TRAFFIC_STATUS_CONFIG[key];
 
-  if (percent <= 50) {
-    key = "red";
-  } else if (percent <= 99) {
-    key = "yellow";
-  } else if (percent <= 120) {
-    key = "green";
-  } else {
-    key = "darkgreen";
+export const calcPercent = (achieved: number, target: number): number => {
+  if (target <= 0) {
+    return 0;
   }
+
+  return (achieved / target) * 100;
+};
+
+export const getTrafficKey = (percent: number): LoadKey => {
+  if (percent <= 50) {
+    return "red";
+  }
+
+  if (percent <= 99) {
+    return "yellow";
+  }
+
+  if (percent <= 120) {
+    return "green";
+  }
+
+  return "darkgreen";
+};
+
+export const calcOverallPercentEqualWeight = (
+  sections: Array<{ achieved: number; target: number; enabled?: boolean }>
+): number => {
+  const activeSections = sections.filter(
+    (section) => section.enabled !== false && section.target > 0
+  );
+
+  if (activeSections.length === 0) {
+    return 0;
+  }
+
+  const totalPercent = activeSections.reduce(
+    (acc, section) => acc + calcPercent(section.achieved, section.target),
+    0
+  );
+
+  return totalPercent / activeSections.length;
+};
+
+export const getTrafficStatus = (total: number, target: number): TrafficStatus => {
+  const percent = calcPercent(total, target);
+  const key = getTrafficKey(percent);
 
   const delta = total - target;
   const config = TRAFFIC_STATUS_CONFIG[key];
