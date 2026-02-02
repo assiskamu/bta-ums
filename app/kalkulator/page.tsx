@@ -8,6 +8,7 @@ import {
   getMinimumTargetGrades,
   getMinimumTargetsByCategory,
   PERIODS,
+  TEACHING_ACTIVITY_TYPES,
   type Period,
   type PeriodSettings,
   sumMinimumTargetHours,
@@ -1396,6 +1397,7 @@ export default function KalkulatorPage() {
   };
 
   const activeSubCategoryId = TAB_SUBCATEGORIES[activeTab];
+  const isTeachingTab = activeTab === "Pengajaran";
   const activitiesForActiveTab =
     catalogActivitiesBySubCategory[activeSubCategoryId] ?? [];
   const selectedActivity: CatalogActivity | null =
@@ -1867,20 +1869,44 @@ export default function KalkulatorPage() {
                     <label className="text-xs font-semibold text-slate-400">
                       Aktiviti
                     </label>
-                    <input
-                      list={`activity-list-${activeTab}`}
-                      value={draftsByTab[activeTab].activityQuery}
-                      onChange={(event) =>
-                        handleActivityChange(activeTab, event.target.value)
-                      }
-                      placeholder="Cari aktiviti"
-                      className="w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
-                    />
-                    <datalist id={`activity-list-${activeTab}`}>
-                      {activitiesForActiveTab.map((activity) => (
-                        <option key={activity.activityCode} value={activity.activityName} />
-                      ))}
-                    </datalist>
+                    {isTeachingTab ? (
+                      <select
+                        value={draftsByTab[activeTab].activityQuery}
+                        onChange={(event) =>
+                          handleActivityChange(activeTab, event.target.value)
+                        }
+                        className="w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                      >
+                        <option value="" disabled>
+                          Pilih jenis aktiviti
+                        </option>
+                        {TEACHING_ACTIVITY_TYPES.map((activityType) => (
+                          <option key={activityType} value={activityType}>
+                            {activityType}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <>
+                        <input
+                          list={`activity-list-${activeTab}`}
+                          value={draftsByTab[activeTab].activityQuery}
+                          onChange={(event) =>
+                            handleActivityChange(activeTab, event.target.value)
+                          }
+                          placeholder="Cari aktiviti"
+                          className="w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                        />
+                        <datalist id={`activity-list-${activeTab}`}>
+                          {activitiesForActiveTab.map((activity) => (
+                            <option
+                              key={activity.activityCode}
+                              value={activity.activityName}
+                            />
+                          ))}
+                        </datalist>
+                      </>
+                    )}
                   </div>
                   <div className="relative flex items-start gap-2">
                     <div className="flex w-full flex-col gap-1">
