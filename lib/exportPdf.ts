@@ -59,40 +59,16 @@ export const exportBtaPdf = async (
   if (typeof window === "undefined") {
     return;
   }
-
-  const loadScript = (src: string) =>
-    new Promise<void>((resolve, reject) => {
-      const existing = document.querySelector(`script[data-src="${src}"]`);
-      if (existing) {
-        resolve();
-        return;
-      }
-      const script = document.createElement("script");
-      script.src = src;
-      script.async = true;
-      script.dataset.src = src;
-      script.onload = () => resolve();
-      script.onerror = () =>
-        reject(new Error("Gagal memuatkan skrip PDF."));
-      document.head.appendChild(script);
-    });
-
-  await loadScript(
-    "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
-  );
-  await loadScript(
-    "https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.js"
-  );
-
-  const jsPDF = (window as { jspdf?: { jsPDF?: unknown } }).jspdf?.jsPDF;
-  const autoTable =
-    (window as {
-      jspdf?: { autoTable?: (doc: unknown, options: AutoTableOptions) => void };
-    }).jspdf?.autoTable;
+  const [{ jsPDF }, autoTableModule] = await Promise.all([
+    import("jspdf"),
+    import("jspdf-autotable"),
+  ]);
+  const autoTable = (
+    "default" in autoTableModule ? autoTableModule.default : autoTableModule
+  ) as (doc: unknown, options: AutoTableOptions) => void;
 
   if (!jsPDF || !autoTable) {
-    alert("Modul PDF tidak dapat dimuatkan. Sila cuba semula.");
-    return;
+    throw new Error("Modul PDF tidak dapat dimuatkan. Sila cuba semula.");
   }
 
   const {
