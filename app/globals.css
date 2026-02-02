@@ -11,7 +11,7 @@ html.dark {
 }
 
 body {
-  background-color: #f6f7fb;
+  background-color: #f2f4fb;
   @apply text-slate-900 font-sans antialiased;
 }
 
@@ -37,11 +37,11 @@ body {
   }
 
   .form-field {
-    @apply w-full rounded-xl border border-slate-300 bg-slate-50/60 px-3 py-2 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 disabled:cursor-not-allowed disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-400 dark:disabled:bg-slate-800/70;
+    @apply w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 hover:border-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 disabled:cursor-not-allowed disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-400 dark:hover:border-slate-500 dark:disabled:bg-slate-800/70;
   }
 
   .form-field-compact {
-    @apply w-full rounded-xl border border-slate-300 bg-slate-50/60 px-3 py-2 text-xs text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 disabled:cursor-not-allowed disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-400 dark:disabled:bg-slate-800/70;
+    @apply w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs text-slate-900 shadow-sm transition placeholder:text-slate-400 hover:border-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 disabled:cursor-not-allowed disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-400 dark:hover:border-slate-500 dark:disabled:bg-slate-800/70;
   }
 
   .output-panel {
@@ -49,7 +49,8 @@ body {
   }
 
   .summary-panel {
-    @apply rounded-2xl border border-indigo-200 bg-indigo-50/40 p-6 shadow-sm dark:border-indigo-500/30 dark:bg-indigo-950/20;
+    @apply relative rounded-2xl border border-indigo-200 bg-indigo-50 p-6 shadow-sm dark:border-indigo-500/30 dark:bg-indigo-950/30;
+    @apply before:absolute before:left-4 before:top-6 before:bottom-6 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-indigo-500 before:to-purple-500 before:content-[''];
   }
 
   .summary-card {
