@@ -24,6 +24,7 @@ import {
 } from "../../lib/catalog";
 import { exportBtaPdf } from "../../lib/exportPdf";
 import { normalizeTitleCase } from "../../lib/text";
+import { getTrafficStatus } from "../../lib/trafficStatus";
 import packageJson from "../../package.json";
 
 const PATHWAYS = [
@@ -1499,9 +1500,13 @@ export default function KalkulatorPage() {
     setHoveredInfoOptionId(null);
   }, [activeTab, selectedOption?.id]);
 
-  const progressPercentage = Math.min((totals.totalHours / 40) * 100, 100);
-  const statusLabel = totals.totalHours >= 40 ? "Cukup" : "Kurang";
-  const progressText = `${totals.totalHours.toFixed(1)} / 40 jam`;
+  const weeklyTargetHours = 40;
+  const trafficStatus = getTrafficStatus(totals.totalHours, weeklyTargetHours);
+  const progressPercentage = Math.min(trafficStatus.percent, 100);
+  const progressText = `${totals.totalHours.toFixed(1)} / ${weeklyTargetHours} jam`;
+  const deltaHoursLabel = `${
+    trafficStatus.delta >= 0 ? "+" : "-"
+  }${Math.abs(trafficStatus.delta).toFixed(1)} jam (${trafficStatus.percent.toFixed(1)}%)`;
   const activeInfoOptionId = hoveredInfoOptionId ?? pinnedInfoOptionId;
 
   return (
@@ -2125,16 +2130,12 @@ export default function KalkulatorPage() {
                 </h2>
                 <div className="flex items-center gap-2">
                   <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      totals.totalHours >= 40
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-amber-100 text-amber-700"
-                    }`}
+                    className={`rounded-full border px-3 py-1 text-xs font-semibold ${trafficStatus.badgeClass}`}
                   >
-                    {statusLabel}
+                    {trafficStatus.label}
                   </span>
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                    Sasaran 40 jam
+                    Sasaran {weeklyTargetHours} jam
                   </span>
                 </div>
               </div>
@@ -2178,16 +2179,19 @@ export default function KalkulatorPage() {
                   {totals.totalHours.toFixed(1)}
                 </p>
                 <p className="text-sm text-slate-500 dark:text-slate-300">
-                  / 40 jam
+                  / {weeklyTargetHours} jam
                 </p>
                 <div className="mt-4">
                   <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-300">
-                    <span>Sasaran 40 jam/minggu</span>
+                    <span>Sasaran {weeklyTargetHours} jam/minggu</span>
                     <span>{progressText}</span>
                   </div>
+                  <p className="mt-2 text-xs font-semibold text-slate-500 dark:text-slate-300">
+                    {deltaHoursLabel}
+                  </p>
                   <div className="mt-2 h-2 w-full rounded-full bg-indigo-200/60 dark:bg-slate-700/70">
                     <div
-                      className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-700"
+                      className={`h-2 rounded-full transition-all duration-700 ${trafficStatus.barClass}`}
                       style={{ width: `${progressPercentage}%` }}
                     />
                   </div>
