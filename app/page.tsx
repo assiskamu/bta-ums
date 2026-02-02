@@ -149,7 +149,7 @@ export default function HomePage() {
       <section className="glass-card relative animate-fade-up overflow-hidden px-6 py-10 md:px-10">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-xs font-semibold text-slate-600 shadow-sm dark:bg-slate-900/60 dark:text-slate-200">
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200">
               ✨ Pusat Rujukan BTA UMS
             </div>
             <div className="space-y-4">
@@ -199,7 +199,7 @@ export default function HomePage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className={`glass-card flex flex-col gap-3 border-white/70 bg-gradient-to-br ${stat.tone} p-4 transition hover:-translate-y-1 dark:border-slate-700/70`}
+                className={`glass-card flex flex-col gap-3 bg-gradient-to-br ${stat.tone} p-4 transition hover:-translate-y-1`}
               >
                 <span className="text-2xl">{stat.icon}</span>
                 <div>
@@ -227,7 +227,7 @@ export default function HomePage() {
               gred/jawatan.
             </p>
           </div>
-          <div className="rounded-2xl bg-white/80 p-6 text-center shadow-inner dark:bg-slate-900/70">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-inner dark:border-slate-700 dark:bg-slate-900/70">
             <p className="text-sm font-semibold text-slate-500 dark:text-slate-300">
               Jam minimum = (Peratus minimum ÷ 100) × 40
             </p>
@@ -243,7 +243,7 @@ export default function HomePage() {
                 onChange={(event) =>
                   setPathway(event.target.value as (typeof pathways)[number])
                 }
-                className="rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/70 dark:text-white"
+                className="form-field"
               >
                 {pathways.map((option) => (
                   <option key={option} value={option}>
@@ -257,7 +257,7 @@ export default function HomePage() {
               <select
                 value={grade}
                 onChange={(event) => setGrade(event.target.value)}
-                className="rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/70 dark:text-white"
+                className="form-field"
               >
                 {gradesForPathway.map((option) => (
                   <option key={option} value={option}>
@@ -271,7 +271,7 @@ export default function HomePage() {
             {sampleTargets.map((target) => (
               <div
                 key={target.category}
-                className="rounded-2xl border border-slate-200 bg-white/70 p-4 text-sm text-slate-600 shadow-sm transition hover:-translate-y-1 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
+                className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm transition hover:-translate-y-1 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
               >
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">
                   {target.category}
@@ -296,7 +296,7 @@ export default function HomePage() {
               Ringkasan sasaran minima mengikut kategori untuk rujukan cepat.
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white/70 p-4 dark:border-slate-700 dark:bg-slate-900/70">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900/70">
             <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
               {pathway} · {grade}
             </p>
@@ -336,28 +336,28 @@ export default function HomePage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setTableView("percent")}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                tableView === "percent"
-                  ? "bg-slate-900 text-white shadow-lg shadow-slate-400/40 dark:bg-white dark:text-slate-900"
-                  : "border border-slate-200 bg-white/70 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
-              }`}
-            >
-              Peratus Minimum (%)
-            </button>
-            <button
-              type="button"
-              onClick={() => setTableView("hours")}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                tableView === "hours"
-                  ? "bg-slate-900 text-white shadow-lg shadow-slate-400/40 dark:bg-white dark:text-slate-900"
-                  : "border border-slate-200 bg-white/70 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
-              }`}
-            >
-              Minimum Jam (daripada 40 jam/minggu)
-            </button>
+              <button
+                type="button"
+                onClick={() => setTableView("percent")}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  tableView === "percent"
+                    ? "border border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-300/60 dark:border-indigo-500/40 dark:bg-indigo-900/30 dark:text-indigo-100"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
+                }`}
+              >
+                Peratus Minimum (%)
+              </button>
+              <button
+                type="button"
+                onClick={() => setTableView("hours")}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  tableView === "hours"
+                    ? "border border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-300/60 dark:border-indigo-500/40 dark:bg-indigo-900/30 dark:text-indigo-100"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
+                }`}
+              >
+                Minimum Jam (daripada 40 jam/minggu)
+              </button>
           </div>
         </div>
 
@@ -372,7 +372,7 @@ export default function HomePage() {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Contoh: DS53/54, Pentadbir, Penyelidik"
-                className="mt-2 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                className="form-field mt-2"
               />
             </div>
             <div className="flex flex-wrap gap-2">
@@ -381,8 +381,8 @@ export default function HomePage() {
                 onClick={() => setFocusedPathway(null)}
                 className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
                   focusedPathway === null
-                    ? "bg-indigo-600 text-white shadow"
-                    : "border border-slate-200 bg-white/70 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
+                    ? "border border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-300/60 dark:border-indigo-500/40 dark:bg-indigo-900/30 dark:text-indigo-100"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
                 }`}
               >
                 Semua Laluan
@@ -394,8 +394,8 @@ export default function HomePage() {
                   onClick={() => setFocusedPathway(option.value)}
                   className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
                     focusedPathway === option.value
-                      ? "bg-indigo-600 text-white shadow"
-                      : "border border-slate-200 bg-white/70 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
+                      ? "border border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-300/60 dark:border-indigo-500/40 dark:bg-indigo-900/30 dark:text-indigo-100"
+                      : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
                   }`}
                 >
                   {option.label}
@@ -407,7 +407,7 @@ export default function HomePage() {
           <div className="relative">
             <div
               ref={tableScrollRef}
-              className="overflow-x-auto rounded-2xl border border-slate-200 bg-white/70 dark:border-slate-700 dark:bg-slate-900/60"
+              className="overflow-x-auto rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900/60"
             >
               <table className="min-w-full text-left text-sm">
                 <thead className="sticky top-0 bg-white/90 text-slate-600 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-200">

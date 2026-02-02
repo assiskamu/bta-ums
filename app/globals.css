@@ -11,7 +11,8 @@ html.dark {
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 font-sans antialiased;
+  background-color: #f6f7fb;
+  @apply text-slate-900 font-sans antialiased;
 }
 
 .dark body {
@@ -20,7 +21,7 @@ body {
 
 @layer components {
   .glass-card {
-    @apply rounded-2xl border border-white/60 bg-white/70 shadow-lg shadow-slate-200/60 backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/60 dark:shadow-black/20;
+    @apply rounded-2xl border border-slate-200/70 bg-white shadow-sm shadow-slate-200/60 dark:border-slate-700/60 dark:bg-slate-900/70 dark:shadow-black/20;
   }
 
   .btn-primary {
@@ -28,10 +29,30 @@ body {
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-full border border-slate-200 bg-white/70 px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/60 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-100 dark:hover:border-slate-600;
+    @apply inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/60 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-100 dark:hover:border-slate-600;
   }
 
   .btn-danger {
     @apply inline-flex items-center justify-center rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/60 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200;
+  }
+
+  .form-field {
+    @apply w-full rounded-xl border border-slate-300 bg-slate-50/60 px-3 py-2 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 disabled:cursor-not-allowed disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-400 dark:disabled:bg-slate-800/70;
+  }
+
+  .form-field-compact {
+    @apply w-full rounded-xl border border-slate-300 bg-slate-50/60 px-3 py-2 text-xs text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 disabled:cursor-not-allowed disabled:bg-slate-100 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:placeholder:text-slate-400 dark:disabled:bg-slate-800/70;
+  }
+
+  .output-panel {
+    @apply rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200;
+  }
+
+  .summary-panel {
+    @apply rounded-2xl border border-indigo-200 bg-indigo-50/40 p-6 shadow-sm dark:border-indigo-500/30 dark:bg-indigo-950/20;
+  }
+
+  .summary-card {
+    @apply rounded-xl border border-indigo-200/70 bg-white/80 p-4 dark:border-indigo-500/30 dark:bg-slate-900/60;
   }
 }
