@@ -2113,117 +2113,116 @@ export default function KalkulatorPage() {
             id="ringkasan"
             className="summary-panel relative order-2 lg:order-none lg:sticky lg:top-6 lg:self-start"
           >
-            <div className="absolute left-4 top-6 bottom-6 w-1 rounded-full bg-gradient-to-b from-indigo-500 to-purple-500" />
             <div className="pl-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                Ringkasan
-              </h2>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                    totals.totalHours >= 40
-                      ? "bg-emerald-100 text-emerald-700"
-                      : "bg-amber-100 text-amber-700"
-                  }`}
-                >
-                  {statusLabel}
-                </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                  Sasaran 40 jam
-                </span>
-              </div>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={handlePrintReport}
-                disabled={!hasEntries}
-                className="btn-secondary px-3 py-2 text-sm disabled:opacity-60"
-              >
-                Cetak
-              </button>
-              <button
-                type="button"
-                onClick={handleExportCsv}
-                disabled={!hasEntries}
-                className="btn-secondary px-3 py-2 text-sm disabled:opacity-60"
-              >
-                Eksport CSV
-              </button>
-              <button
-                type="button"
-                onClick={handleExportPdf}
-                disabled={!hasEntries}
-                className="btn-secondary px-3 py-2 text-sm disabled:opacity-60"
-              >
-                Eksport PDF
-              </button>
-            </div>
-            {!hasEntries ? (
-              <p className="mt-2 text-xs text-slate-400">
-                Tiada data untuk dieksport.
-              </p>
-            ) : null}
-
-            <div className="summary-card mt-6">
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">
-                Jumlah jam
-              </p>
-              <p className="mt-2 text-4xl font-semibold text-slate-900 dark:text-white">
-                {totals.totalHours.toFixed(1)}
-              </p>
-              <p className="text-sm text-slate-500 dark:text-slate-300">
-                / 40 jam
-              </p>
-              <div className="mt-4">
-                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-300">
-                  <span>Sasaran 40 jam/minggu</span>
-                  <span>{progressText}</span>
-                </div>
-                <div className="mt-2 h-2 w-full rounded-full bg-indigo-200/60 dark:bg-slate-700/70">
-                  <div
-                    className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-700"
-                    style={{ width: `${progressPercentage}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="summary-card mt-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">
-                    Sasaran minimum
-                  </p>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-200">
-                    {pathway} · {grade}
-                  </p>
-                </div>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-200">
-                  {totalTargetHours.toFixed(1)} / 40 jam
-                </span>
-              </div>
-              <div className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-200">
-                {targetByCategory.map((target) => (
-                  <div
-                    key={target.category}
-                    className="flex items-center justify-between rounded-lg border border-indigo-200/60 bg-indigo-50/60 px-3 py-2 dark:border-indigo-500/30 dark:bg-indigo-950/30"
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  Ringkasan
+                </h2>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      totals.totalHours >= 40
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-amber-100 text-amber-700"
+                    }`}
                   >
-                    <span>
-                      {TAB_ICONS[target.category as TabKey]} {target.category}
-                    </span>
-                    <div className="text-right text-xs font-semibold text-slate-600 dark:text-slate-200">
-                      <div>{(target.percent * 100).toFixed(0)}%</div>
-                      <div>{target.minHours.toFixed(1)} jam</div>
-                    </div>
-                  </div>
-                ))}
+                    {statusLabel}
+                  </span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                    Sasaran 40 jam
+                  </span>
+                </div>
               </div>
-              <p className="mt-4 text-xs text-slate-500 dark:text-slate-300">
-                Sasaran berdasarkan Garis Panduan BTA UMS (40 jam/minggu).
-              </p>
-            </div>
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrintReport}
+                  disabled={!hasEntries}
+                  className="btn-secondary px-3 py-2 text-sm disabled:opacity-60"
+                >
+                  Cetak
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportCsv}
+                  disabled={!hasEntries}
+                  className="btn-secondary px-3 py-2 text-sm disabled:opacity-60"
+                >
+                  Eksport CSV
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportPdf}
+                  disabled={!hasEntries}
+                  className="btn-secondary px-3 py-2 text-sm disabled:opacity-60"
+                >
+                  Eksport PDF
+                </button>
+              </div>
+              {!hasEntries ? (
+                <p className="mt-2 text-xs text-slate-400">
+                  Tiada data untuk dieksport.
+                </p>
+              ) : null}
+
+              <div className="summary-card mt-6">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">
+                  Jumlah jam
+                </p>
+                <p className="mt-2 text-4xl font-semibold text-slate-900 dark:text-white">
+                  {totals.totalHours.toFixed(1)}
+                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-300">
+                  / 40 jam
+                </p>
+                <div className="mt-4">
+                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-300">
+                    <span>Sasaran 40 jam/minggu</span>
+                    <span>{progressText}</span>
+                  </div>
+                  <div className="mt-2 h-2 w-full rounded-full bg-indigo-200/60 dark:bg-slate-700/70">
+                    <div
+                      className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-700"
+                      style={{ width: `${progressPercentage}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="summary-card mt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">
+                      Sasaran minimum
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-200">
+                      {pathway} · {grade}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                    {totalTargetHours.toFixed(1)} / 40 jam
+                  </span>
+                </div>
+                <div className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-200">
+                  {targetByCategory.map((target) => (
+                    <div
+                      key={target.category}
+                      className="flex items-center justify-between rounded-lg border border-indigo-200/60 bg-indigo-50/60 px-3 py-2 dark:border-indigo-500/30 dark:bg-indigo-950/30"
+                    >
+                      <span>
+                        {TAB_ICONS[target.category as TabKey]} {target.category}
+                      </span>
+                      <div className="text-right text-xs font-semibold text-slate-600 dark:text-slate-200">
+                        <div>{(target.percent * 100).toFixed(0)}%</div>
+                        <div>{target.minHours.toFixed(1)} jam</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 text-xs text-slate-500 dark:text-slate-300">
+                  Sasaran berdasarkan Garis Panduan BTA UMS (40 jam/minggu).
+                </p>
+              </div>
 
             <div className="mt-6">
               <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">
