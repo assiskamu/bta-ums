@@ -11,7 +11,7 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/40 bg-white/70 backdrop-blur dark:border-slate-800/70 dark:bg-slate-950/70">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200/70 bg-white/90 backdrop-blur dark:border-slate-800/70 dark:bg-slate-950/70">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
           <span className="rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-1 text-sm font-semibold text-white shadow">
@@ -36,7 +36,7 @@ export default function Navbar() {
           </Link>
         </div>
       </div>
-      <div className="border-t border-white/40 bg-white/60 px-4 py-2 text-xs text-slate-500 backdrop-blur dark:border-slate-800/70 dark:bg-slate-950/60 dark:text-slate-300 md:hidden">
+      <div className="border-t border-slate-200/70 bg-white/80 px-4 py-2 text-xs text-slate-500 backdrop-blur dark:border-slate-800/70 dark:bg-slate-950/60 dark:text-slate-300 md:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap gap-3">
           {NAV_LINKS.map((link) => (
             <Link

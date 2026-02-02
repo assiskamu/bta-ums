@@ -1529,7 +1529,7 @@ export default function KalkulatorPage() {
                 onChange={(event) =>
                   setPathway(event.target.value as (typeof PATHWAYS)[number])
                 }
-                className="w-44 rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                className="form-field w-44"
               >
                 {PATHWAYS.map((option) => (
                   <option key={option} value={option}>
@@ -1547,7 +1547,7 @@ export default function KalkulatorPage() {
                 id="grade"
                 value={grade}
                 onChange={(event) => setGrade(event.target.value)}
-                className="w-56 rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                className="form-field w-56"
               >
                 {gradesForPathway.map((option) => (
                   <option key={option} value={option}>
@@ -1565,7 +1565,7 @@ export default function KalkulatorPage() {
                 id="period"
                 value={period}
                 onChange={(event) => setPeriod(event.target.value as Period)}
-                className="w-40 rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                className="form-field w-40"
               >
                 {PERIODS.map((option) => (
                   <option key={option} value={option}>
@@ -1587,7 +1587,7 @@ export default function KalkulatorPage() {
                 onChange={(event) =>
                   handleSemesterWeeksChange(event.target.value)
                 }
-                className="w-24 rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                className="form-field w-24"
               />
               <label
                 className="text-sm font-medium text-slate-600"
@@ -1601,7 +1601,7 @@ export default function KalkulatorPage() {
                 min="1"
                 value={periodSettings.yearWeeks}
                 onChange={(event) => handleYearWeeksChange(event.target.value)}
-                className="w-24 rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                className="form-field w-24"
               />
               <button
                 type="button"
@@ -1669,8 +1669,8 @@ export default function KalkulatorPage() {
                   onClick={() => setActiveTab(tab)}
                   className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ${
                     activeTab === tab
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-200 ring-1 ring-blue-500/40"
-                      : "border border-slate-200 bg-white/70 text-slate-600 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
+                      ? "border border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-300/60 dark:border-indigo-500/40 dark:bg-indigo-900/30 dark:text-indigo-100"
+                      : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200"
                   }`}
                 >
                   <span>{TAB_ICONS[tab]}</span>
@@ -1716,7 +1716,7 @@ export default function KalkulatorPage() {
                           }))
                         }
                         placeholder="Cari aktiviti, kategori, unit atau rujukan"
-                        className="w-full max-w-sm rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                        className="form-field w-full max-w-sm"
                       />
                       <select
                         value={catalogUnitFilterByTab[activeTab]}
@@ -1726,7 +1726,7 @@ export default function KalkulatorPage() {
                             [activeTab]: event.target.value,
                           }))
                         }
-                        className="rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                        className="form-field w-auto"
                       >
                         <option value="">Semua unit</option>
                         {catalogUnitOptionsForActiveTab.map((unit) => (
@@ -1740,7 +1740,7 @@ export default function KalkulatorPage() {
                           <button
                             type="button"
                             onClick={() => handleOpenAdminAdd(activeTab)}
-                            className="btn-primary px-3 py-2 text-xs"
+                            className="btn-secondary px-3 py-2 text-xs"
                           >
                             Tambah Aktiviti
                           </button>
@@ -1875,7 +1875,7 @@ export default function KalkulatorPage() {
                         onChange={(event) =>
                           handleActivityChange(activeTab, event.target.value)
                         }
-                        className="w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                        className="form-field"
                       >
                         <option value="" disabled>
                           Pilih jenis aktiviti
@@ -1892,7 +1892,7 @@ export default function KalkulatorPage() {
                         onChange={(event) =>
                           handleActivityChange(activeTab, event.target.value)
                         }
-                        className="w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                        className="form-field"
                       >
                         <option value="" disabled>
                           Pilih aktiviti
@@ -1919,7 +1919,7 @@ export default function KalkulatorPage() {
                           handleOptionChange(activeTab, event.target.value)
                         }
                         disabled={!selectedActivity}
-                        className="w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white disabled:cursor-not-allowed disabled:bg-slate-100 dark:disabled:bg-slate-800/70"
+                        className="form-field disabled:cursor-not-allowed disabled:bg-slate-100 dark:disabled:bg-slate-800/70"
                       >
                         <option value="" disabled>
                           Pilih kategori aktiviti
@@ -1976,7 +1976,7 @@ export default function KalkulatorPage() {
                       </div>
                     ) : null}
                   </div>
-                  <div className="rounded-lg border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200">
+                  <div className="output-panel">
                     <p className="text-xs font-semibold text-slate-400 dark:text-slate-300">
                       Unit
                     </p>
@@ -2008,19 +2008,19 @@ export default function KalkulatorPage() {
                       onChange={(event) =>
                         handleQuantityChange(activeTab, event.target.value)
                       }
-                      className="w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                      className="form-field"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => handleAddEntry(activeTab)}
                     disabled={!selectedOption || !isQuantityValid}
-                    className="btn-primary px-5 py-2 text-sm disabled:opacity-60"
+                    className="btn-secondary px-5 py-2 text-sm disabled:opacity-60"
                   >
                     Tambah
                   </button>
                 </div>
-                <div className="mt-3 rounded-lg border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200">
+                <div className="mt-3 output-panel">
                   <p className="text-xs font-semibold text-slate-400 dark:text-slate-300">
                     Cara kira
                   </p>
@@ -2111,8 +2111,10 @@ export default function KalkulatorPage() {
 
           <aside
             id="ringkasan"
-            className="glass-card order-2 p-6 lg:order-none lg:sticky lg:top-6 lg:self-start"
+            className="summary-panel relative order-2 lg:order-none lg:sticky lg:top-6 lg:self-start"
           >
+            <div className="absolute left-4 top-6 bottom-6 w-1 rounded-full bg-gradient-to-b from-indigo-500 to-purple-500" />
+            <div className="pl-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                 Ringkasan
@@ -2164,11 +2166,11 @@ export default function KalkulatorPage() {
               </p>
             ) : null}
 
-            <div className="mt-6 rounded-xl border border-slate-200/80 bg-white/70 p-4 dark:border-slate-700/60 dark:bg-slate-900/60">
+            <div className="summary-card mt-6">
               <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">
                 Jumlah jam
               </p>
-              <p className="mt-2 text-3xl font-semibold text-slate-900 dark:text-white">
+              <p className="mt-2 text-4xl font-semibold text-slate-900 dark:text-white">
                 {totals.totalHours.toFixed(1)}
               </p>
               <p className="text-sm text-slate-500 dark:text-slate-300">
@@ -2179,7 +2181,7 @@ export default function KalkulatorPage() {
                   <span>Sasaran 40 jam/minggu</span>
                   <span>{progressText}</span>
                 </div>
-                <div className="mt-2 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700/70">
+                <div className="mt-2 h-2 w-full rounded-full bg-indigo-200/60 dark:bg-slate-700/70">
                   <div
                     className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-700"
                     style={{ width: `${progressPercentage}%` }}
@@ -2188,7 +2190,7 @@ export default function KalkulatorPage() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-xl border border-slate-200/80 bg-white/70 p-4 dark:border-slate-700/60 dark:bg-slate-900/60">
+            <div className="summary-card mt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">
@@ -2206,7 +2208,7 @@ export default function KalkulatorPage() {
                 {targetByCategory.map((target) => (
                   <div
                     key={target.category}
-                    className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-900/70"
+                    className="flex items-center justify-between rounded-lg border border-indigo-200/60 bg-indigo-50/60 px-3 py-2 dark:border-indigo-500/30 dark:bg-indigo-950/30"
                   >
                     <span>
                       {TAB_ICONS[target.category as TabKey]} {target.category}
@@ -2239,7 +2241,7 @@ export default function KalkulatorPage() {
                   return (
                     <div
                       key={target.category}
-                      className="rounded-lg border border-slate-100 bg-white/70 px-3 py-3 dark:border-slate-700 dark:bg-slate-900/60"
+                      className="rounded-lg border border-indigo-200/60 bg-white/80 px-3 py-3 dark:border-indigo-500/30 dark:bg-slate-900/60"
                     >
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-slate-600 dark:text-slate-200">
@@ -2289,7 +2291,7 @@ export default function KalkulatorPage() {
                   return (
                     <li
                       key={tab}
-                      className="flex items-center justify-between rounded-lg border border-slate-100 bg-white px-3 py-2"
+                      className="flex items-center justify-between rounded-lg border border-indigo-200/60 bg-white px-3 py-2"
                     >
                       <span className="text-slate-600">
                         {TAB_ICONS[tab]} {tab}
@@ -2313,6 +2315,7 @@ export default function KalkulatorPage() {
                   );
                 })}
               </ul>
+            </div>
             </div>
           </aside>
         </section>
@@ -2345,7 +2348,7 @@ export default function KalkulatorPage() {
                         subCategoryId: event.target.value,
                       }))
                     }
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                    className="form-field mt-1"
                   >
                     {TABS.map((tab) => (
                       <option key={tab} value={TAB_SUBCATEGORIES[tab]}>
@@ -2368,7 +2371,7 @@ export default function KalkulatorPage() {
                       }))
                     }
                     placeholder="Nama aktiviti"
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                    className="form-field mt-1"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -2385,7 +2388,7 @@ export default function KalkulatorPage() {
                       }))
                     }
                     placeholder="Nama kategori aktiviti"
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                    className="form-field mt-1"
                   />
                 </div>
                 <div>
@@ -2404,7 +2407,7 @@ export default function KalkulatorPage() {
                         unitLabel: selected?.label ?? current.unitLabel,
                       }));
                     }}
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                    className="form-field mt-1"
                   >
                     {!UNIT_OPTIONS.some(
                       (unit) => unit.code === adminFormState.unitCode
@@ -2436,7 +2439,7 @@ export default function KalkulatorPage() {
                       }))
                     }
                     placeholder="Contoh: 1.5"
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                    className="form-field mt-1"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -2453,7 +2456,7 @@ export default function KalkulatorPage() {
                       }))
                     }
                     placeholder="Contoh: pengajaran, kelas"
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                    className="form-field mt-1"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -2469,7 +2472,7 @@ export default function KalkulatorPage() {
                       }))
                     }
                     placeholder="Catatan tambahan untuk pentadbir"
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                    className="form-field mt-1"
                     rows={3}
                   />
                 </div>
@@ -2487,7 +2490,7 @@ export default function KalkulatorPage() {
                       }))
                     }
                     placeholder="Contoh: Garis Panduan"
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                    className="form-field mt-1"
                   />
                 </div>
                 <div>
@@ -2504,7 +2507,7 @@ export default function KalkulatorPage() {
                       }))
                     }
                     placeholder="Contoh: 1.2 Pengajaran"
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                    className="form-field mt-1"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -2521,7 +2524,7 @@ export default function KalkulatorPage() {
                       }))
                     }
                     placeholder="Contoh: 12"
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+                    className="form-field mt-1"
                   />
                 </div>
               </div>
@@ -2529,14 +2532,14 @@ export default function KalkulatorPage() {
                 <button
                   type="button"
                   onClick={() => setIsAdminModalOpen(false)}
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+                  className="btn-secondary px-4 py-2 text-sm"
                 >
                   Batal
                 </button>
                 <button
                   type="button"
                   onClick={handleAdminSave}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                  className="btn-secondary px-4 py-2 text-sm"
                 >
                   Simpan
                 </button>
