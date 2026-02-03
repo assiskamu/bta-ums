@@ -57,6 +57,36 @@ const TAB_ICONS: Record<TabKey, string> = {
   Perkhidmatan: "🤝",
 };
 
+const BAR_CLASS = {
+  red: "bg-red-500",
+  yellow: "bg-amber-500",
+  green: "bg-emerald-500",
+  black: "bg-black",
+} as const;
+
+const SECTION_TRAFFIC_STYLES = {
+  red: {
+    box: "bg-red-50 border border-red-200 shadow-[0_0_0_4px_rgba(239,68,68,0.18)]",
+    badge: "bg-red-100 text-red-800 border border-red-200",
+    text: "text-slate-900",
+  },
+  yellow: {
+    box: "bg-amber-50 border border-amber-200 shadow-[0_0_0_4px_rgba(245,158,11,0.18)]",
+    badge: "bg-amber-100 text-amber-800 border border-amber-200",
+    text: "text-slate-900",
+  },
+  green: {
+    box: "bg-emerald-50 border border-emerald-200 shadow-[0_0_0_4px_rgba(16,185,129,0.18)]",
+    badge: "bg-emerald-100 text-emerald-800 border border-emerald-200",
+    text: "text-slate-900",
+  },
+  black: {
+    box: "bg-slate-950 border border-slate-800 shadow-[0_0_0_6px_rgba(2,6,23,0.35)]",
+    badge: "bg-black text-white border border-slate-700",
+    text: "text-white/90",
+  },
+} as const;
+
 const TAB_SUBCATEGORIES: Record<TabKey, string> = {
   Pengajaran: "SUB_TEACH",
   Penyeliaan: "SUB_SUP",
@@ -2238,36 +2268,37 @@ export default function KalkulatorPage() {
                   const actual = totals.breakdown[target.category as TabKey];
                   const percent = calcPercent(actual, target.minHours);
                   const traffic = getSectionTraffic(percent);
-                  const progressWidth = Math.min(percent, 100);
+                  const styles = SECTION_TRAFFIC_STYLES[traffic.key];
+                  const barWidth = Math.min(percent, 100);
 
                   return (
                     <div
                       key={target.category}
-                      className={`rounded-lg px-3 py-3 transition-colors transition-shadow duration-200 ${traffic.styles.box}`}
+                      className={`rounded-lg px-3 py-3 transition-colors transition-shadow duration-200 ${styles.box}`}
                     >
                       <div className="flex items-center justify-between text-sm">
-                        <span className={traffic.styles.text}>
+                        <span className={styles.text}>
                           {TAB_ICONS[target.category as TabKey]}{" "}
                           {target.category}
                         </span>
                         <span
-                          className={`rounded-full px-2 py-1 text-xs font-semibold ${traffic.styles.badge}`}
+                          className={`rounded-full px-2 py-1 text-xs font-semibold ${styles.badge}`}
                         >
                           {traffic.label}
                         </span>
                       </div>
                       <div
-                        className={`mt-2 flex items-center justify-between text-xs ${traffic.styles.text}`}
+                        className={`mt-2 flex items-center justify-between text-xs ${styles.text}`}
                       >
                         <span>
                           {actual.toFixed(1)} / {target.minHours.toFixed(1)} jam
                         </span>
                         <span>{percent.toFixed(1)}%</span>
                       </div>
-                      <div className="mt-2 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700/70">
+                      <div className="mt-2 h-3 w-full rounded-full bg-slate-200 dark:bg-slate-700/70">
                         <div
-                          className={`h-2 rounded-full transition-all duration-700 ${traffic.styles.bar}`}
-                          style={{ width: `${progressWidth}%` }}
+                          className={`h-full rounded-full transition-all duration-700 ${BAR_CLASS[traffic.key]}`}
+                          style={{ width: `${barWidth}%` }}
                         />
                       </div>
                     </div>
