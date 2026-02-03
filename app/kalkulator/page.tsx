@@ -24,7 +24,7 @@ import {
 } from "../../lib/catalog";
 import { exportBtaPdf } from "../../lib/exportPdf";
 import { normalizeTitleCase } from "../../lib/text";
-import { getTrafficStatus } from "../../lib/trafficStatus";
+import { calcPercent, getSectionTraffic } from "../../lib/sectionTraffic";
 import packageJson from "../../package.json";
 
 const PATHWAYS = [
@@ -1501,12 +1501,13 @@ export default function KalkulatorPage() {
   }, [activeTab, selectedOption?.id]);
 
   const weeklyTargetHours = 40;
-  const trafficStatus = getTrafficStatus(totals.totalHours, weeklyTargetHours);
-  const progressPercentage = Math.min(trafficStatus.percent, 100);
+  const overallPercent = calcPercent(totals.totalHours, weeklyTargetHours);
+  const progressPercentage = Math.min(overallPercent, 100);
   const progressText = `${totals.totalHours.toFixed(1)} / ${weeklyTargetHours} jam`;
+  const deltaHours = totals.totalHours - weeklyTargetHours;
   const deltaHoursLabel = `${
-    trafficStatus.delta >= 0 ? "+" : "-"
-  }${Math.abs(trafficStatus.delta).toFixed(1)} jam (${trafficStatus.percent.toFixed(1)}%)`;
+    deltaHours >= 0 ? "+" : "-"
+  }${Math.abs(deltaHours).toFixed(1)} jam (${overallPercent.toFixed(1)}%)`;
   const activeInfoOptionId = hoveredInfoOptionId ?? pinnedInfoOptionId;
 
   return (
@@ -2129,11 +2130,6 @@ export default function KalkulatorPage() {
                   Ringkasan
                 </h2>
                 <div className="flex items-center gap-2">
-                  <span
-                    className={`rounded-full border px-3 py-1 text-xs font-semibold ${trafficStatus.badgeClass}`}
-                  >
-                    {trafficStatus.label}
-                  </span>
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                     Sasaran {weeklyTargetHours} jam
                   </span>
@@ -2191,7 +2187,7 @@ export default function KalkulatorPage() {
                   </p>
                   <div className="mt-2 h-2 w-full rounded-full bg-indigo-200/60 dark:bg-slate-700/70">
                     <div
-                      className={`h-2 rounded-full transition-all duration-700 ${trafficStatus.barClass}`}
+                      className="h-2 rounded-full bg-indigo-500 transition-all duration-700"
                       style={{ width: `${progressPercentage}%` }}
                     />
                   </div>
@@ -2240,44 +2236,42 @@ export default function KalkulatorPage() {
               <div className="mt-3 space-y-3">
                 {targetByCategory.map((target) => {
                   const actual = totals.breakdown[target.category as TabKey];
-                  const progress =
-                    target.minHours > 0
-                      ? Math.min((actual / target.minHours) * 100, 100)
-                      : 0;
-                  const isMet = actual >= target.minHours;
+                  const percent = calcPercent(actual, target.minHours);
+                  const traffic = getSectionTraffic(percent);
+                  const progressWidth = Math.min(percent, 100);
+                  const titleClass =
+                    traffic.textClass ?? "text-slate-600 dark:text-slate-200";
+                  const detailClass =
+                    traffic.subTextClass ?? "text-slate-500 dark:text-slate-300";
 
                   return (
                     <div
                       key={target.category}
-                      className="rounded-lg border border-indigo-200/60 bg-white/80 px-3 py-3 dark:border-indigo-500/30 dark:bg-slate-900/60"
+                      className={`rounded-lg px-3 py-3 transition-colors transition-shadow duration-200 ${traffic.boxClass}`}
                     >
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-slate-600 dark:text-slate-200">
+                        <span className={titleClass}>
                           {TAB_ICONS[target.category as TabKey]}{" "}
                           {target.category}
                         </span>
                         <span
-                          className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                            isMet
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-amber-100 text-amber-700"
-                          }`}
+                          className={`rounded-full px-2 py-1 text-xs font-semibold ${traffic.badgeClass}`}
                         >
-                          {isMet ? "Cukup" : "Kurang"}
+                          {traffic.label}
                         </span>
                       </div>
-                      <div className="mt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-300">
+                      <div
+                        className={`mt-2 flex items-center justify-between text-xs ${detailClass}`}
+                      >
                         <span>
                           {actual.toFixed(1)} / {target.minHours.toFixed(1)} jam
                         </span>
-                        <span>{progress.toFixed(0)}%</span>
+                        <span>{percent.toFixed(1)}%</span>
                       </div>
                       <div className="mt-2 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700/70">
                         <div
-                          className={`h-2 rounded-full transition-all duration-700 ${
-                            isMet ? "bg-emerald-500" : "bg-amber-500"
-                          }`}
-                          style={{ width: `${progress}%` }}
+                          className={`h-2 rounded-full transition-all duration-700 ${traffic.barClass}`}
+                          style={{ width: `${progressWidth}%` }}
                         />
                       </div>
                     </div>
