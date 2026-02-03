@@ -2239,29 +2239,25 @@ export default function KalkulatorPage() {
                   const percent = calcPercent(actual, target.minHours);
                   const traffic = getSectionTraffic(percent);
                   const progressWidth = Math.min(percent, 100);
-                  const titleClass =
-                    traffic.textClass ?? "text-slate-600 dark:text-slate-200";
-                  const detailClass =
-                    traffic.subTextClass ?? "text-slate-500 dark:text-slate-300";
 
                   return (
                     <div
                       key={target.category}
-                      className={`rounded-lg px-3 py-3 transition-colors transition-shadow duration-200 ${traffic.boxClass}`}
+                      className={`rounded-lg px-3 py-3 transition-colors transition-shadow duration-200 ${traffic.styles.box}`}
                     >
                       <div className="flex items-center justify-between text-sm">
-                        <span className={titleClass}>
+                        <span className={traffic.styles.text}>
                           {TAB_ICONS[target.category as TabKey]}{" "}
                           {target.category}
                         </span>
                         <span
-                          className={`rounded-full px-2 py-1 text-xs font-semibold ${traffic.badgeClass}`}
+                          className={`rounded-full px-2 py-1 text-xs font-semibold ${traffic.styles.badge}`}
                         >
                           {traffic.label}
                         </span>
                       </div>
                       <div
-                        className={`mt-2 flex items-center justify-between text-xs ${detailClass}`}
+                        className={`mt-2 flex items-center justify-between text-xs ${traffic.styles.text}`}
                       >
                         <span>
                           {actual.toFixed(1)} / {target.minHours.toFixed(1)} jam
@@ -2270,7 +2266,7 @@ export default function KalkulatorPage() {
                       </div>
                       <div className="mt-2 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700/70">
                         <div
-                          className={`h-2 rounded-full transition-all duration-700 ${traffic.barClass}`}
+                          className={`h-2 rounded-full transition-all duration-700 ${traffic.styles.bar}`}
                           style={{ width: `${progressWidth}%` }}
                         />
                       </div>
